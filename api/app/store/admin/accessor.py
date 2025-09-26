@@ -1,0 +1,36 @@
+from typing import TYPE_CHECKING
+
+from app.admin.models import AdminModel
+from app.store.base.accessor import BaseAccessor
+from passlib.hash import pbkdf2_sha256
+from sqlalchemy import select
+
+if TYPE_CHECKING:
+    from app.web.app import Application
+
+
+class AdminAccessor(BaseAccessor):
+    async def connect(self, app: "Application") -> None:
+        config_admin = app.config.admin
+        email = config_admin.email
+        password = config_admin.password
+
+        if not await self.get_by_email(email):
+            await self.create_admin(email, password)
+
+    async def get_by_email(self, email: str) -> AdminModel | None:
+        async with self.app.database.session() as session:
+            result = await session.execute(
+                select(AdminModel).where(AdminModel.email == email)
+            )
+            return result.scalar_one_or_none()
+
+    async def create_admin(self, email: str, password: str) -> AdminModel:
+        hashed_password = pbkdf2_sha256.hash(password)
+
+        async with self.app.database.session() as session:
+            admin = AdminModel(email=email, password=hashed_password)
+            session.add(admin)
+            await session.commit()
+            await session.refresh(admin)
+            return admin
