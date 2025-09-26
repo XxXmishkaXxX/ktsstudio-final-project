@@ -1,0 +1,14 @@
+bot:
+  token: "token_bot_father"        # Токен бота от BotFather
+  webhook_url: "https://sssoei-188-16-37-200.ru.tuna.am/webhook"  # URL вебхука
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+rabbitmq:
+  host: "rabbitmq"
+  port: 5672
+  user: "guest"
+  password: "guest"
+  queue: "bot_events"
