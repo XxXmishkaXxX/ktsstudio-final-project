@@ -1,5 +1,6 @@
 import typing
 from dataclasses import dataclass
+
 import yaml
 
 if typing.TYPE_CHECKING:
@@ -78,9 +79,7 @@ def setup_config(app: "Application", config_path: str):
         queue=rmq_conf.get("queue", "bot_events"),
     )
 
-    redis = RedisConfig(
-        url=redis_conf.get("url", "redis://localhost:6379/0")
-    )
+    redis = RedisConfig(url=redis_conf.get("url", "redis://localhost:6379/0"))
 
     db = DBConfig(
         host=db_conf.get("host", "localhost"),

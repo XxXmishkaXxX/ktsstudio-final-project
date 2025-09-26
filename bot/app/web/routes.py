@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 
 def setup_routes(app: "Application"):
-
     app.router.add_get(
         "/health", lambda request: web.json_response({"status": "ok"})
     )

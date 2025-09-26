@@ -4,9 +4,9 @@ from aiohttp.web import (
 )
 from app.bot.client import TelegramBot, setup_telegram_client
 from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
-from app.store.database.database import Database
-from app.store.cache.cache import Cache
 from app.store import Store, setup_store
+from app.store.cache.cache import Cache
+from app.store.database.database import Database
 from app.web.config import Config, setup_config
 from app.web.logger import setup_logging
 from app.web.routes import setup_routes
