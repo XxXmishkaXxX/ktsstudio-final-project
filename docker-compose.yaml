@@ -56,20 +56,20 @@ services:
     volumes:
       - ./webhook:/webhook
 
-    bot:
-      build: ./bot
-      container_name: bot_game_service
-      ports:
-        - "8081:8081"
-      depends_on:
-        rabbitmq:
-          condition: service_healthy
-        postgres:
-          condition: service_healthy
-        redis:
-          condition: service_healthy
-      volumes:
-        - ./bot:/bot
+  bot:
+    build: ./bot
+    container_name: bot_game_service
+    ports:
+      - "8081:8081"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./bot:/bot
 
 volumes:
   rabbitmq_data: {}
