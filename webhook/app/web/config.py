@@ -45,13 +45,13 @@ def setup_config(app: "Application", config_path: str):
 
     bot = BotConfig(
         token=bot_conf.get("token", ""),
-        webhook_url=bot_conf.get("webhook_url", "")
+        webhook_url=bot_conf.get("webhook_url", ""),
     )
     bot.api_url = f"https://api.telegram.org/bot{bot.token}"
 
     server = ServerConfig(
         host=server_conf.get("host", "0.0.0.0"),
-        port=server_conf.get("port", 8080)
+        port=server_conf.get("port", 8080),
     )
 
     rmq = RMQConfig(

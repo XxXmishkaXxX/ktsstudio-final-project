@@ -6,7 +6,9 @@ if typing.TYPE_CHECKING:
 
 
 class RabbitMQ:
-    def __init__(self, host: str, port: int, user: str, password: str, queue: str):
+    def __init__(
+        self, host: str, port: int, user: str, password: str, queue: str
+    ):
         self.host = host
         self.port = port
         self.user = user
@@ -27,8 +29,7 @@ class RabbitMQ:
         self._channel = await self._connection.channel()
 
         self.queue = await self._channel.declare_queue(
-            self.queue_name,
-            durable=True
+            self.queue_name, durable=True
         )
 
     async def publish(self, message: str):
@@ -57,7 +58,7 @@ def setup_rabbitmq(app: "Application"):
             await app.rmq.connect()
         except Exception as e:
             app.logger.error(str(e))
-            
+
     async def close(_app):
         await app.rmq.close()
 

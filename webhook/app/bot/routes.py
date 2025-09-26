@@ -3,6 +3,7 @@ from aiohttp import web
 
 routes = web.RouteTableDef()
 
+
 @routes.post("/webhook")
 async def webhook(request: web.Request):
     data = await request.json()

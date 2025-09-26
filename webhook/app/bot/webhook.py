@@ -4,6 +4,7 @@ import typing
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
+
 class TelegramBot:
     def __init__(self, app: "Application"):
         self.app = app
@@ -37,7 +38,7 @@ def setup_webhook(app: "Application"):
             await app.bot.set_webhook(app.config.bot.webhook_url)
         except Exception as e:
             app.logger.error(str(e))
-            
+
     async def close(_app):
         await app.bot.close()
 
