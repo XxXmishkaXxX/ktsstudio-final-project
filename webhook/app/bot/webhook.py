@@ -1,5 +1,6 @@
-import aiohttp
 import typing
+
+import aiohttp
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

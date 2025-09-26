@@ -1,5 +1,6 @@
-import aio_pika
 import typing
+
+import aio_pika
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
