@@ -10,4 +10,6 @@ if TYPE_CHECKING:
 def setup_routes(app: "Application"):
     app.add_routes(routes)
 
-    app.router.add_get("/health", lambda request: web.Response(text="ok"))
+    app.router.add_get(
+        "/health", lambda request: web.json_response({"status": "ok"})
+    )
