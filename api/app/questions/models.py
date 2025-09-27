@@ -52,4 +52,3 @@ class AnswerOption(BaseModel):
             f"<AnswerOption id={self.id} q={self.question_id} "
             f"text={self.text[:20]} pts={self.points}>"
         )
-
