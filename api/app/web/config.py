@@ -12,6 +12,7 @@ class ServerConfig:
     host: str = "0.0.0.0"
     port: int = 8082
 
+
 @dataclass
 class SessionConfig:
     key: str
@@ -54,9 +55,9 @@ def setup_config(app: "Application", config_path: str):
         port=server_conf.get("port", 8080),
     )
 
-    session=SessionConfig(
-            key=session_conf.get("key"),
-        )
+    session = SessionConfig(
+        key=session_conf.get("key"),
+    )
     db = DBConfig(
         host=db_conf.get("host", "localhost"),
         port=db_conf.get("port", 5432),

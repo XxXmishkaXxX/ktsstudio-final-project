@@ -1,4 +1,5 @@
 import json
+
 from aiohttp import web
 from aiohttp_session import get_session
 
@@ -13,10 +14,10 @@ class AdminRequiredMixin:
         if not session or session.get("role") != "admin":
             raise web.HTTPUnauthorized(
                 text=json.dumps({"status": "unauthorized"}),
-                content_type="application/json"
+                content_type="application/json",
             )
         self.request.admin = {
             "id": session.get("id"),
-            "email": session.get("email")
+            "email": session.get("email"),
         }
         self.request.session = session
