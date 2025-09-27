@@ -34,3 +34,8 @@ class AdminAccessor(BaseAccessor):
             await session.commit()
             await session.refresh(admin)
             return admin
+
+    async def verify_password(
+        self, password: str, hashed_password: str
+    ) -> bool:
+        return pbkdf2_sha256.verify(password, hashed_password)

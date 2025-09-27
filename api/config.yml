@@ -10,8 +10,11 @@ admin:
   password: "jdscjdmJe9w9eKKkcmsc"
 
 database:
-  host: localhost
+  host: postgres
   port: 5432
   user: postgres
   password: postgres_pass
   database: db_game
+
+session:
+  key: CaY5iCkYtN7DqXdiYK1BvmGrQuaSA4Tl4bEk9my0jc0=

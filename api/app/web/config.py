@@ -14,6 +14,11 @@ class ServerConfig:
 
 
 @dataclass
+class SessionConfig:
+    key: str
+
+
+@dataclass
 class AdminConfig:
     email: str = "admin@admin.ru"
     password: str = "password"
@@ -33,6 +38,7 @@ class Config:
     server: ServerConfig
     admin: AdminConfig
     db: DBConfig
+    session: SessionConfig | None = None
 
 
 def setup_config(app: "Application", config_path: str):
@@ -42,12 +48,16 @@ def setup_config(app: "Application", config_path: str):
     server_conf = raw.get("server", {})
     db_conf = raw.get("database", {})
     admin_conf = raw.get("admin", {})
+    session_conf = raw.get("session", {})
 
     server = ServerConfig(
         host=server_conf.get("host", "0.0.0.0"),
         port=server_conf.get("port", 8080),
     )
 
+    session = SessionConfig(
+        key=session_conf.get("key"),
+    )
     db = DBConfig(
         host=db_conf.get("host", "localhost"),
         port=db_conf.get("port", 5432),
@@ -60,5 +70,6 @@ def setup_config(app: "Application", config_path: str):
         email=admin_conf.get("email", "admin@admin.ru"),
         password=admin_conf.get("password", "password"),
     )
-
-    app.config = Config(server=server, db=db, admin=admin)
+    app.logger.info(admin_conf.get("password"))
+    app.logger.info(admin_conf.get("email"))
+    app.config = Config(server=server, db=db, admin=admin, session=session)

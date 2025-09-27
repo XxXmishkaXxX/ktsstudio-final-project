@@ -3,6 +3,7 @@ from aiohttp.web import (
     Request as AiohttpRequest,
     View as AiohttpView,
 )
+from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_session import setup as session_setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from app.admin.models import AdminModel
@@ -10,6 +11,7 @@ from app.store import Store, setup_store
 from app.store.database.database import Database
 from app.web.config import Config, setup_config
 from app.web.logger import setup_logging
+from app.web.middlewares import setup_middlewares
 from app.web.routes import setup_routes
 
 
@@ -51,6 +53,11 @@ def setup_app(config_path: str) -> Application:
     setup_config(app, config_path)
     setup_store(app)
     session_setup(app, EncryptedCookieStorage(app.config.session.key))
+    setup_middlewares(app)
+    setup_aiohttp_apispec(
+        app=app,
+        title="My API",
+        version="v1",
+    )
     setup_routes(app)
-
     return app

@@ -9,6 +9,8 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app_network
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 5s
@@ -26,6 +28,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 5s
@@ -39,6 +43,8 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - app_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -55,6 +61,8 @@ services:
         condition: service_healthy
     volumes:
       - ./webhook:/webhook
+    networks:
+      - app_network
 
   bot:
     build: ./bot
@@ -70,6 +78,8 @@ services:
         condition: service_healthy
     volumes:
       - ./bot:/bot
+    networks:
+      - app_network
 
   admin_api:
     build: ./api
@@ -81,8 +91,14 @@ services:
         condition: service_healthy
     volumes:
       - ./api:/api
+    networks:
+      - app_network
 
 volumes:
   rabbitmq_data: {}
   postgres_data: {}
   redis_data: {}
+
+networks:
+  app_network:
+    driver: bridge
