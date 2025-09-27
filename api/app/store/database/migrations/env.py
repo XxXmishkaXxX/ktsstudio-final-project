@@ -3,6 +3,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from app.admin.models import AdminModel
+from app.questions.models import Question, AnswerOption
 from app.store.database.sqlachemy_base import BaseModel
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
