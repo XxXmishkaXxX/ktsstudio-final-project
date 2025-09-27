@@ -8,8 +8,10 @@ if TYPE_CHECKING:
 
 def setup_routes(app: "Application"):
     from app.admin.routes import setup_routes as setup_admin_routes
+    from app.questions.routes import setup_routes as setup_questions_routes
 
     setup_admin_routes(app)
+    setup_questions_routes(app)
     app.router.add_get(
         "/health", lambda request: web.json_response({"status": "ok"})
     )
