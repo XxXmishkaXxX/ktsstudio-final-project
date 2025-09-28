@@ -13,10 +13,10 @@ rabbitmq:
   queue: "bot_events"
 
 redis:
-  url: "redis://localhost:6379/0" 
+  url: "redis://redis:6379/0" 
 
 database:
-  host: localhost
+  host: postgres
   port: 5432
   user: postgres
   password: postgres_pass
