@@ -1,6 +1,8 @@
+import functools
 import typing
 
 import aio_pika
+from app.rmq.rmq_callback import rmq_callback
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -8,8 +10,15 @@ if typing.TYPE_CHECKING:
 
 class RabbitMQ:
     def __init__(
-        self, host: str, port: int, user: str, password: str, queue: str
+        self,
+        app: "Application",
+        host: str,
+        port: int,
+        user: str,
+        password: str,
+        queue: str,
     ):
+        self.app = app
         self.host = host
         self.port = port
         self.user = user
@@ -40,7 +49,9 @@ class RabbitMQ:
         if not self.queue:
             raise RuntimeError("Queue is not declared. Call connect() first.")
 
-        await self.queue.consume(callback, no_ack=False)
+        wrapped_callback = functools.partial(callback, app=self.app)
+
+        await self.queue.consume(wrapped_callback, no_ack=False)
 
     async def close(self):
         if self._connection:
@@ -50,6 +61,7 @@ class RabbitMQ:
 def setup_rabbitmq(app: "Application"):
     rmq_conf = app.config.rmq
     app.rmq = RabbitMQ(
+        app=app,
         host=rmq_conf.host,
         port=rmq_conf.port,
         user=rmq_conf.user,
@@ -60,6 +72,7 @@ def setup_rabbitmq(app: "Application"):
     async def start(_app):
         try:
             await app.rmq.connect()
+            await app.rmq.consume(rmq_callback)
         except Exception as e:
             app.logger.error(str(e))
 
