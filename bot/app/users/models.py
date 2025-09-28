@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 
 from app.store.database.sqlachemy_base import BaseModel
-from sqlalchemy import BigInteger, DateTime, String, Enum, ForeignKey
+from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
