@@ -6,7 +6,9 @@ if typing.TYPE_CHECKING:
 
 class Store:
     def __init__(self, app: "Application"):
-        pass
+        from app.store.users.accessor import UserAccessor
+
+        self.users = UserAccessor(app)
 
 
 def setup_store(app: "Application"):
