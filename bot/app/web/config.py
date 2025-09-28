@@ -10,6 +10,7 @@ if typing.TYPE_CHECKING:
 @dataclass
 class BotConfig:
     token: str
+    username: str
     api_url: str = ""
 
 
@@ -63,6 +64,7 @@ def setup_config(app: "Application", config_path: str):
 
     bot = BotConfig(
         token=bot_conf.get("token", ""),
+        username=bot_conf.get("username"),
         api_url=f"https://api.telegram.org/bot{bot_conf.get('token', '')}",
     )
 
