@@ -32,8 +32,8 @@ def setup_app(config_path: str) -> Application:
     setup_logging(app)
     setup_config(app, config_path)
     setup_store(app)
-    setup_rabbitmq(app)
     setup_telegram_client(app)
     setup_routes(app)
+    setup_rabbitmq(app)
 
     return app
