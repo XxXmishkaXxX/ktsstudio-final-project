@@ -1,3 +1,6 @@
+import json
+
+
 def main_menu(bot_username: str) -> dict:
     return {
         "inline_keyboard": [
@@ -11,13 +14,23 @@ def main_menu(bot_username: str) -> dict:
     }
 
 
-def join_game(game_id):
+def join_game(game_id: int, team1_id: int, team2_id: int):
     return {
         "inline_keyboard": [
             [
                 {
-                    "text": "🚪 Присоединиться",
-                    "callback_data": f"join:{game_id}",
+                    "text": "🚪 Присоединиться в команду 1",
+                    "callback_data": json.dumps(
+                        {"t": "join", "g": game_id, "team": team1_id}
+                    ),
+                }
+            ],
+            [
+                {
+                    "text": "🚪 Присоединиться в команду 2",
+                    "callback_data": json.dumps(
+                        {"t": "join", "g": game_id, "team": team2_id}
+                    ),
                 }
             ],
         ]
