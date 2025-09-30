@@ -1,3 +1,6 @@
+from html import escape
+
+
 def welcome_message(username: str) -> str:
     return (
         f"👋 Привет, {username}!\n\n"
@@ -10,4 +13,28 @@ def welcome_message(username: str) -> str:
         "  побеждает!\n\n"
         "✨ Зовите друзей в чат, запускайте игру и проверяйте,\n"
         "  кто мыслит как большинство!"
+    )
+
+
+def get_game_text(team1, team2, state="created", extra=""):
+    states_text = {
+        "created": "⏳ <b>Ожидание игроков...</b>",
+        "starting": "🚀 <b>Старт игры!</b>",
+        "in_progress": "🎮 <b>Играем!</b>",
+        "finished": "🎉 <b>Игра окончена!</b>",
+    }
+
+    state_message = states_text.get(state, "⏳ <b>Ожидание игроков...</b>")
+
+    team1_text = "🟢 Команда 1\n" + "\n".join(
+        f"{i + 1}️⃣ {name}" for i, name in enumerate(team1)
+    )
+    team2_text = "🔵 Команда 2\n" + "\n".join(
+        f"{i + 1}️⃣ {name}" for i, name in enumerate(team2)
+    )
+
+    return (
+        f"🎲 <b>Игра: 100 к 1</b> 🎲\n\n"
+        f"<b>Состояние игры:</b>\n{escape(state_message)}\n\n"
+        f"{escape(team1_text)}\n\n{escape(team2_text)}"
     )
