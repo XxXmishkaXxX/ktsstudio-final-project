@@ -17,7 +17,7 @@ def join_game(game_id):
             [
                 {
                     "text": "🚪 Присоединиться",
-                    "callback_data": f"join:game:{game_id}",
+                    "callback_data": f"join:{game_id}",
                 }
             ],
         ]
