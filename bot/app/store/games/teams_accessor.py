@@ -32,8 +32,9 @@ class TeamAccessor(BaseAccessor):
     async def leave_team(self, team_id: int, tg_id: int):
         async with self.app.database.session() as session:
             member = await session.execute(
-                select(TeamMember)
-                .where(TeamMember.team_id == team_id, TeamMember.user_id == tg_id)
+                select(TeamMember).where(
+                    TeamMember.team_id == team_id, TeamMember.user_id == tg_id
+                )
             )
             member = member.scalars().first()
             if member:
