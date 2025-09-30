@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.games.models.questions import Question, AnswerOption
 from app.games.models.games import Game, Round
 from app.games.models.teams import Team, TeamMember
-from app.users.models import User 
+from app.users.models import User
 from app.store.database.sqlachemy_base import BaseModel
 
 # this is the Alembic Config object, which provides access to the values within the .ini file in use.
