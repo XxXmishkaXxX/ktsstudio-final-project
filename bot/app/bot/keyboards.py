@@ -9,3 +9,16 @@ def main_menu(bot_username: str) -> dict:
             ],
         ]
     }
+
+
+def join_game(game_id):
+    return {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "🚪 Присоединиться",
+                    "callback_data": f"join:game:{game_id}",
+                }
+            ],
+        ]
+    }
