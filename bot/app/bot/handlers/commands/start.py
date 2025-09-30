@@ -25,6 +25,7 @@ async def start_command(
             "first_name", "игрок"
         )
         await app.store.users.create_user(tg_id, username)
+        await app.store.users.set_state_user(tg_id, "idle")
     else:
         username = user.username
 
@@ -33,6 +34,3 @@ async def start_command(
         text=welcome_message(username),
         reply_markup=json.dumps(main_menu(app.config.bot.username)),
     )
-
-
-# TODO: сделать проверку что бот уже есть в группе.
