@@ -14,7 +14,6 @@ async def handle_command(
     user_data: dict,
     chat_type: str,
 ):
-    app.logger.info(command)
     if command == "/start":
         await start_command(app, chat_id, user_data, chat_type)
     elif command == "/play":
