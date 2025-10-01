@@ -1,6 +1,6 @@
 from app.games.models.games import Game, GameState
 from app.store.base.accessor import BaseAccessor
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 
 class GameAccessor(BaseAccessor):
@@ -11,6 +11,19 @@ class GameAccessor(BaseAccessor):
             await session.commit()
             await session.refresh(game)
             return game
+        
+    async def delete_game(self, game_id: int):
+        async with self.app.database.session() as session:
+            result = await session.execute(
+                select(Game).
+                where(
+                    Game.id == game_id)
+            )
+            game = result.scalars().first()
+            if game:
+                await session.delete(game)
+                await session.commit()
+
 
     async def is_active_game_in_chat(self, chat_id: int) -> Game | None:
         async with self.app.database.session() as session:
@@ -22,7 +35,7 @@ class GameAccessor(BaseAccessor):
                     )
                 )
             ).scalar_one_or_none()
-            return bool(game)
+            return game
 
     async def get_game_by_id(self, game_id: int) -> Game | None:
         async with self.app.database.session() as session:
@@ -38,3 +51,10 @@ class GameAccessor(BaseAccessor):
                     select(Game.state).where(Game.id == game_id)
                 )
             ).scalar_one()
+
+    async def set_game_state(self, game_id: int, state: GameState):
+        async with self.app.database.session() as session:
+            await session.execute(
+                update(Game).where(Game.id == game_id).values(state=state.value)
+            )
+            await session.commit()
