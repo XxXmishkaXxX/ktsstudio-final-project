@@ -7,12 +7,16 @@ if typing.TYPE_CHECKING:
 class Store:
     def __init__(self, app: "Application"):
         from app.store.games.games_accessor import GameAccessor
+        from app.store.games.questions_accessor import QuestionAccessor
+        from app.store.games.rounds_accessor import RoundAccessor
         from app.store.games.teams_accessor import TeamAccessor
         from app.store.users.accessor import UserAccessor
 
         self.users = UserAccessor(app)
         self.games = GameAccessor(app)
         self.teams = TeamAccessor(app)
+        self.rounds = RoundAccessor(app)
+        self.questions = QuestionAccessor(app)
 
 
 def setup_store(app: "Application"):
