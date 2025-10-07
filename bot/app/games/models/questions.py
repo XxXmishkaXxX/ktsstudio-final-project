@@ -20,8 +20,11 @@ class Question(BaseModel):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    answers = relationship(
-        "AnswerOption", back_populates="question", cascade="all, delete-orphan"
+    answers: Mapped[list["AnswerOption"]] = relationship(
+        "AnswerOption",
+        back_populates="question",
+        cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
     def __repr__(self):
@@ -41,11 +44,13 @@ class AnswerOption(BaseModel):
     text: Mapped[str] = mapped_column(Text, nullable=False)
     points: Mapped[int] = mapped_column(Integer, nullable=False)
     position: Mapped[int | None] = mapped_column(Integer, nullable=True)
-
-    question = relationship("Question", back_populates="answers")
+    question: Mapped["Question"] = relationship(
+        "Question", back_populates="answers"
+    )
 
     def __repr__(self):
         return (
-            f"<AnswerOption id={self.id} q={self.question_id}"
+            f"<AnswerOption id={self.id} "
+            f"q={self.question_id} "
             f"text={self.text[:20]} pts={self.points}>"
         )

@@ -1,7 +1,6 @@
 import typing
 
-from app.games.service import GameService
-from app.users.models import User
+from app.users.models import State, User
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -16,9 +15,14 @@ async def join_game_callback(
     user: User,
     team: int,
 ):
-    service: GameService = GameService(app)
     try:
-        await service.join_to_game(game_id, team, user.id, chat_id, message_id)
+        await app.store.users.set_state_user(user.id, State.in_game)
+        team_id = await app.game_service.join_to_game(
+            game_id, team, user.id, chat_id, message_id
+        )
+        await app.telegram.answer_callback_query(
+            callback_id, f"Вы присоединились в команду {team_id}"
+        )
     except Exception as e:
         await app.telegram.answer_callback_query(callback_id, str(e))
     else:

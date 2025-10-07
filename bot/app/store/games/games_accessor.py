@@ -1,6 +1,6 @@
 from app.games.models.games import Game, GameState
 from app.store.base.accessor import BaseAccessor
-from sqlalchemy import select
+from sqlalchemy import and_, select, update
 
 
 class GameAccessor(BaseAccessor):
@@ -12,22 +12,40 @@ class GameAccessor(BaseAccessor):
             await session.refresh(game)
             return game
 
+    async def delete_game(self, game_id: int):
+        async with self.app.database.session() as session:
+            result = await session.execute(
+                select(Game).where(Game.id == game_id)
+            )
+            game = result.scalars().first()
+            if game:
+                await session.delete(game)
+                await session.commit()
+
     async def is_active_game_in_chat(self, chat_id: int) -> Game | None:
         async with self.app.database.session() as session:
-            game = (
+            return (
                 await session.execute(
                     select(Game).where(
-                        Game.chat_id == chat_id
-                        and Game.state != GameState.finished
+                        and_(
+                            Game.chat_id == chat_id,
+                            Game.state != GameState.finished,
+                        )
                     )
                 )
             ).scalar_one_or_none()
-            return bool(game)
 
     async def get_game_by_id(self, game_id: int) -> Game | None:
         async with self.app.database.session() as session:
             result = await session.execute(
                 select(Game).where(Game.id == game_id)
+            )
+            return result.scalar_one_or_none()
+
+    async def get_game_by_chat_id(self, chat_id: int) -> Game | None:
+        async with self.app.database.session() as session:
+            result = await session.execute(
+                select(Game).where(Game.chat_id == chat_id)
             )
             return result.scalar_one_or_none()
 
@@ -38,3 +56,18 @@ class GameAccessor(BaseAccessor):
                     select(Game.state).where(Game.id == game_id)
                 )
             ).scalar_one()
+
+    async def set_game_state(self, game_id: int, state: GameState):
+        async with self.app.database.session() as session:
+            await session.execute(
+                update(Game).where(Game.id == game_id).values(state=state.value)
+            )
+            await session.commit()
+
+    async def get_current_round_id(self, game_id: int):
+        async with self.app.database.session() as session:
+            return (
+                await session.execute(
+                    select(Game.current_round_id).where(Game.id == game_id)
+                )
+            ).scalar_one_or_none()
