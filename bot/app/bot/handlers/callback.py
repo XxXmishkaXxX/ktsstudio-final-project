@@ -1,5 +1,6 @@
 import typing
 
+from app.bot.handlers.callbacks.buzzer import press_buzzer_callback
 from app.bot.handlers.callbacks.join import join_game_callback
 from app.bot.handlers.utils.users import create_or_get_user
 
@@ -24,3 +25,6 @@ async def handle_callback(
         await join_game_callback(
             app, game_id, chat_id, callback_id, message_id, user, team
         )
+    elif callback_type == "buzzer":
+        round_id = kwargs.get("round_id")
+        await press_buzzer_callback(app, round_id, callback_id, user)
