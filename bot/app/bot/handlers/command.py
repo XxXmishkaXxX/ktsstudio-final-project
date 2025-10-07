@@ -1,5 +1,6 @@
 import typing
 
+from app.bot.handlers.commands.answer import answer_command
 from app.bot.handlers.commands.play import play_command
 from app.bot.handlers.commands.start import start_command
 from app.bot.handlers.commands.stop_game import stop_game_command
@@ -15,6 +16,7 @@ async def handle_command(
     chat_id: int,
     user_data: dict,
     chat_type: str,
+    **kwargs,
 ):
     user = await create_or_get_user(app, user_data)
 
@@ -24,3 +26,6 @@ async def handle_command(
         await play_command(app, chat_id, user, chat_type)
     elif command == "/stop_game":
         await stop_game_command(app, chat_id, user, chat_type)
+    elif command == "/ans":
+        answer = kwargs.get("args")
+        await answer_command(app, chat_id, chat_type, answer, user)
