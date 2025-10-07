@@ -1,24 +1,16 @@
 import asyncio
-import json
 import typing
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
 from app.games.models.games import GameState
-from app.games.models.rounds import RoundState
-from app.games.services.renderer import GameRenderer
-from app.games.services.round import RoundService
-from app.games.services.timer import TimerService
 from app.users.models import State as UserState
 
 
 class GameService:
     def __init__(self, app: "Application"):
         self.app = app
-        self.round_service = RoundService(app)
-        self.timer_service = TimerService(app)
-        self.renderer = GameRenderer(app)
 
     # ----------------- public API -----------------
 
@@ -106,7 +98,7 @@ class GameService:
             )
             await self.update_state(game_id, chat_id, message_id)
         else:
-            await self.renderer.render_created(
+            await self.app.renderer.render_created(
                 game_id, chat_id, teams, message_id
             )
 
@@ -123,7 +115,7 @@ class GameService:
         team_2 = [m.user.username or str(m.user_id) for m in teams[1].members]
 
         async def on_tick(sec: int):
-            await self.renderer.render_starting(
+            await self.app.renderer.render_starting(
                 chat_id,
                 message_id,
                 team_1=team_1,
@@ -150,12 +142,12 @@ class GameService:
             await self.app.store.games.set_game_state(
                 game_id, GameState.created
             )
-            await self.renderer.render_created(
+            await self.app.renderer.render_created(
                 game_id, chat_id, message_id, teams
             )
 
-        asyncio.create_task(
-            self.timer_service.start_timer(
+        _ = asyncio.create_task(  # noqa: RUF006
+            self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
                 on_tick=on_tick,
@@ -165,8 +157,8 @@ class GameService:
         )
 
     async def _handle_in_progress(self, game_id, chat_id, teams, message_id):
-        current_round = await self.round_service.get_current_or_create_round(
-            game_id
+        current_round = (
+            await self.app.round_service.get_current_or_create_round(game_id)
         )
         if not current_round:
             await self.app.store.games.set_game_state(
@@ -175,7 +167,7 @@ class GameService:
             await self.update_state(game_id, chat_id, message_id)
             return
 
-        await self.round_service.handle_round(
+        await self.app.round_service.handle_round(
             current_round, game_id, chat_id, message_id, teams
         )
 
@@ -201,7 +193,7 @@ class GameService:
                     member.user_id, UserState.idle
                 )
 
-        await self.renderer.render_finished(
+        await self.app.renderer.render_finished(
             chat_id, message_id, winners=winners, score=score
         )
 

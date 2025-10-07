@@ -1,12 +1,11 @@
+import asyncio
 import json
 import typing
-import asyncio
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
 from app.games.models.rounds import Round, RoundState
-from app.games.models.games import GameState
 
 
 class RoundService:
@@ -51,11 +50,11 @@ class RoundService:
             )
         elif state == RoundState.finished:
             await self.finish_round(current_round.id)
-            
+
             await self.app.game_service.update_state(
-                    game_id, chat_id, message_id
-                )
-            
+                game_id, chat_id, message_id
+            )
+
     async def _handle_faceoff(
         self, round_, game_id, chat_id, teams, message_id
     ):
@@ -101,7 +100,7 @@ class RoundService:
                 updated_round, game_id, chat_id, message_id, teams
             )
 
-        asyncio.create_task(
+        _ = asyncio.create_task(  # noqa: RUF006
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
@@ -155,7 +154,7 @@ class RoundService:
             )
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
-        asyncio.create_task(
+        _ = asyncio.create_task(  # noqa: RUF006
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
@@ -225,11 +224,13 @@ class RoundService:
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
         async def on_interrupt():
-            strikes = await self.app.cache.pool.get(f"round:{round_.id}:team:{round_.current_team_id}:strikes")
+            strikes = await self.app.cache.pool.get(
+                f"round:{round_.id}:team:{round_.current_team_id}:strikes"
+            )
             self.app.logger.info(strikes)
             if int(strikes) >= 3:
                 await self.switch_team(round_)
-            else:    
+            else:
                 await self.set_round_state(round_.id, RoundState.finished)
             updated_round = await self.app.store.rounds.get_round_by_id(
                 round_.id
@@ -237,7 +238,7 @@ class RoundService:
             await self.app.cache.pool.delete(lock_key)
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
-        asyncio.create_task(
+        _ = asyncio.create_task(  # noqa: RUF006
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
@@ -529,10 +530,10 @@ class RoundService:
             sec=sec,
         )
         if count_strikes >= 3:
-                await self.app.cache.pool.delete(
-                    f"round:{round_.id}:teamplay_timer"
-                )
-                return
+            await self.app.cache.pool.delete(
+                f"round:{round_.id}:teamplay_timer"
+            )
+            return
 
         if res.get("all_opened"):
             final_score = await self.app.store.rounds.get_score(round_.id)

@@ -4,11 +4,11 @@ from aiohttp.web import (
 )
 from app.bot.client import TelegramBot, setup_telegram_client
 from app.games.services.setup import (
-    setup_services,
     GameRenderer,
     GameService,
     RoundService,
     TimerService,
+    setup_services,
 )
 from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
 from app.store import Store, setup_store

@@ -1,6 +1,6 @@
 from app.games.models.games import Game, GameState
 from app.store.base.accessor import BaseAccessor
-from sqlalchemy import select, update, and_
+from sqlalchemy import and_, select, update
 
 
 class GameAccessor(BaseAccessor):

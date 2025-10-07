@@ -9,7 +9,6 @@ if typing.TYPE_CHECKING:
 async def stop_game_command(
     app: "Application", chat_id: int, user: User, chat_type: str
 ):
-
     if chat_type == "private":
         await app.telegram.send_message(
             chat_id, "Эта команда доступна только в чате с игроками"
