@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 
 from app.games.models.questions import Question, AnswerOption
-from app.games.models.games import Game, Round
+from app.games.models.games import Game
+from app.games.models.rounds import Round, RoundAnswer
 from app.games.models.teams import Team, TeamMember
 from app.users.models import User
 from app.store.database.sqlachemy_base import BaseModel
