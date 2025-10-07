@@ -19,7 +19,8 @@ async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
 
                 data = json.loads(payload["callback_query"]["data"])
                 callback_type = data["t"]
-                game_id = int(data["g"])
+                game_id = data["g"]
+                round_id = data.get("r")
                 team = data.get("team")
 
                 message_id = payload["callback_query"]["message"]["message_id"]
@@ -35,6 +36,7 @@ async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
                     message_id,
                     user_data,
                     team=team,
+                    round_id=round_id,
                 )
             elif "message" in payload:
                 msg = payload["message"]
@@ -42,20 +44,20 @@ async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
                 text = msg.get("text", "")
                 user_data = msg.get("from", {})
                 chat_type = msg["chat"]["type"]
-                command = next(
-                    (
-                        text[e["offset"] : e["offset"] + e["length"]]
-                        for e in msg.get("entities", [])
-                        if e["type"] == "bot_command"
-                    ),
-                    None,
-                )
+
+                command = None
+                args = ""
+
+                for e in msg.get("entities", []):
+                    if e["type"] == "bot_command":
+                        command = text[e["offset"] : e["offset"] + e["length"]]
+                        args = text[e["offset"] + e["length"] :].strip()
+                        break
 
                 if command:
                     await handle_command(
-                        app, command, chat_id, user_data, chat_type
+                        app, command, chat_id, user_data, chat_type, args=args
                     )
-            app.logger.info(json.dumps(payload))
 
         except Exception as e:
             app.logger.error("⚠️ Failed to handle message: %s", e)
