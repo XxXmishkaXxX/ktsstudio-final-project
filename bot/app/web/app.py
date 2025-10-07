@@ -3,6 +3,13 @@ from aiohttp.web import (
     Request as AiohttpRequest,
 )
 from app.bot.client import TelegramBot, setup_telegram_client
+from app.games.services.setup import (
+    setup_services,
+    GameRenderer,
+    GameService,
+    RoundService,
+    TimerService,
+)
 from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
 from app.store import Store, setup_store
 from app.store.cache.cache import Cache
@@ -19,6 +26,10 @@ class Application(AiohttpApplication):
     store: Store
     telegram: TelegramBot
     rmq: RabbitMQ
+    timer_service: TimerService
+    renderer: GameRenderer
+    round_service: RoundService
+    game_service: GameService
 
 
 class Request(AiohttpRequest):
@@ -32,6 +43,7 @@ def setup_app(config_path: str) -> Application:
     setup_logging(app)
     setup_config(app, config_path)
     setup_store(app)
+    setup_services(app)
     setup_telegram_client(app)
     setup_routes(app)
     setup_rabbitmq(app)
