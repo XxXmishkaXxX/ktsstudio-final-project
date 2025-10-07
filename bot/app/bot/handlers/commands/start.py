@@ -18,8 +18,7 @@ async def start_command(
             chat_id, "❌ Команда /start работает только в личном чате с ботом."
         )
         return
-    app.logger.info(user.username)
-    app.logger.info(app.config.bot.username)
+
     await app.telegram.send_message(
         chat_id,
         text=welcome_message(user.username),
