@@ -35,3 +35,18 @@ def join_game(game_id: int, team1_id: int, team2_id: int):
             ],
         ]
     }
+
+
+def buzzer_button(game_id: int, round_id: int) -> dict:
+    return {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "🛑",
+                    "callback_data": json.dumps(
+                        {"t": "buzzer", "g": game_id, "r": round_id}
+                    ),
+                }
+            ],
+        ]
+    }
