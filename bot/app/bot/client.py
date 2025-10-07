@@ -1,4 +1,6 @@
+import asyncio
 import json
+import re
 import typing
 
 import aiohttp
@@ -21,11 +23,24 @@ class TelegramBot:
 
     async def api_call(self, method: str, payload: dict) -> dict:
         url = f"{self.app.config.bot.api_url}/{method}"
-        async with self.session.post(url, json=payload) as resp:
-            if resp.status != 200:
-                text = await resp.text()
-                raise Exception(f"Telegram API error {resp.status}: {text}")
-            return await resp.json()
+        for _ in range(3):
+            try:
+                async with self.session.post(url, json=payload) as resp:
+                    if resp.status != 200:
+                        text = await resp.text()
+                        raise Exception(
+                            f"Telegram API error {resp.status}: {text}"
+                        )
+                    return await resp.json()
+            except Exception as e:
+                if "429" in str(e):
+                    retry_after = int(
+                        re.search(r"retry after (\d+)", str(e)).group(1)
+                    )
+                    await asyncio.sleep(retry_after + 1)
+                else:
+                    raise
+        return {}
 
     async def send_message(self, chat_id: int, text: str, **kwargs) -> dict:
         return await self.api_call(
