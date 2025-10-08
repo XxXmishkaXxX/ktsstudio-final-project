@@ -2,8 +2,9 @@ import asyncio
 import json
 import re
 import typing
-
 import aiohttp
+
+from aiohttp import ClientError, ServerDisconnectedError
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -21,26 +22,66 @@ class TelegramBot:
         if self.session:
             await self.session.close()
 
+
     async def api_call(self, method: str, payload: dict) -> dict:
         url = f"{self.app.config.bot.api_url}/{method}"
-        for _ in range(3):
+        timeout = aiohttp.ClientTimeout(total=5, connect=3)  # ⏱️ ограничение ожидания
+        max_attempts = 3
+
+        for attempt in range(1, max_attempts + 1):
             try:
-                async with self.session.post(url, json=payload) as resp:
+                self.app.logger.info(f"[API_CALL] -> {method}, attempt {attempt}")
+                async with self.session.post(url, json=payload, timeout=timeout) as resp:
+                    self.app.logger.info(f"[API_CALL] <- {method}, status={resp.status}")
+
+                    # Проверяем статус
                     if resp.status != 200:
                         text = await resp.text()
-                        raise Exception(
-                            f"Telegram API error {resp.status}: {text}"
-                        )
+                        self.app.logger.warning(f"Telegram API error {resp.status}: {text}")
+
+                        if resp.status == 429:  # rate limit
+                            await asyncio.sleep(5)
+                            continue
+
+                        raise Exception(f"Telegram API error {resp.status}: {text}")
+
+                    # Успешный ответ
                     return await resp.json()
-            except Exception as e:
-                if "429" in str(e):
-                    retry_after = int(
-                        re.search(r"retry after (\d+)", str(e)).group(1)
-                    )
-                    await asyncio.sleep(retry_after + 1)
+
+            except (ServerDisconnectedError, aiohttp.ServerTimeoutError, asyncio.TimeoutError) as e:
+                self.app.logger.warning(f"Server disconnected/timeout on {method}: {e}")
+                # 🧩 Пересоздаём сессию, если соединение порвалось
+                try:
+                    await self.session.close()
+                except Exception:
+                    pass
+                self.session = aiohttp.ClientSession()
+
+                if attempt < max_attempts:
+                    await asyncio.sleep(1 * attempt)
+                    continue
                 else:
                     raise
+
+            except ClientError as e:
+                self.app.logger.warning(f"ClientError on {method}: {e}")
+                if attempt < max_attempts:
+                    await asyncio.sleep(1 * attempt)
+                    continue
+                else:
+                    raise
+
+            except Exception as e:
+                self.app.logger.exception(f"Unexpected error in api_call: {e}")
+                if attempt < max_attempts:
+                    await asyncio.sleep(1 * attempt)
+                    continue
+                else:
+                    raise
+
+        # Если после всех попыток не удалось — возвращаем пустой результат
         return {}
+
 
     async def send_message(self, chat_id: int, text: str, **kwargs) -> dict:
         return await self.api_call(
