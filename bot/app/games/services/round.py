@@ -33,12 +33,12 @@ class RoundService:
         return None
 
     async def handle_round(
-        self, current_round, game_id, chat_id, message_id, teams=None
+        self, current_round, game_id, chat_id, message_id
     ):
         state = current_round.state
         if state == RoundState.faceoff:
             await self._handle_faceoff(
-                current_round, game_id, chat_id, teams, message_id
+                current_round, game_id, chat_id, message_id
             )
         elif state == RoundState.buzzer_answer:
             await self._handle_buzzer_answer(
@@ -56,8 +56,10 @@ class RoundService:
             )
 
     async def _handle_faceoff(
-        self, round_, game_id, chat_id, teams, message_id
+        self, round_, game_id, chat_id, message_id
     ):
+        self.app.logger.info("IN FACE OF")
+        teams = await self.app.store.teams.get_game_teams(game_id)
         buzzer_ids = await self.choose_buzzers(game_id)
         buzzers = [
             member.user.username or str(member.user_id)
@@ -67,10 +69,6 @@ class RoundService:
         ]
         redis_key = f"round:{round_.id}:buzzer_timer"
         lock_key = f"{redis_key}:lock"
-
-        created = await self.app.cache.pool.set(redis_key, "10", nx=True)
-        if not created:
-            return
 
         async def on_tick(sec: int):
             await self.app.renderer.render_in_progress(
@@ -88,7 +86,7 @@ class RoundService:
         async def on_finish():
             await self.app.cache.pool.delete(redis_key)
             await self.app.cache.pool.delete(lock_key)
-            await self.handle_round(round_, game_id, chat_id, message_id, teams)
+            await self.handle_round(round_, game_id, chat_id, message_id)
 
         async def on_interrupt():
             await self.app.cache.pool.delete(lock_key)
@@ -97,13 +95,14 @@ class RoundService:
                 round_.id
             )
             await self.handle_round(
-                updated_round, game_id, chat_id, message_id, teams
+                updated_round, game_id, chat_id, message_id
             )
 
         _ = asyncio.create_task(  # noqa: RUF006
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
+                sec=10,
                 on_tick=on_tick,
                 on_finish=on_finish,
                 on_interrupt=on_interrupt,
@@ -114,10 +113,6 @@ class RoundService:
         redis_key = f"round:{round_.id}:buzzer_answer_timer"
         lock_key = f"{redis_key}:lock"
         opened_ans = await self.app.store.rounds.get_opened_answers(round_.id)
-
-        created = await self.app.cache.pool.set(redis_key, "30", nx=True)
-        if not created:
-            return
 
         async def on_tick(sec: int):
             await self.app.renderer.render_in_progress(
@@ -141,6 +136,7 @@ class RoundService:
             else:
                 await self.set_round_state(round_.id, RoundState.team_play)
 
+            await self.app.store.rounds.overwrite_buzzer(round_.id, None)
             updated_round = await self.app.store.rounds.get_round_by_id(
                 round_.id
             )
@@ -158,6 +154,7 @@ class RoundService:
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
+                sec=30,
                 on_tick=on_tick,
                 on_finish=on_finish,
                 on_interrupt=on_interrupt,
@@ -167,10 +164,6 @@ class RoundService:
     async def _handle_team_play(self, round_, game_id, chat_id, message_id):
         redis_key = f"round:{round_.id}:teamplay_timer"
         lock_key = f"{redis_key}:lock"
-
-        created = await self.app.cache.pool.set(redis_key, "60", nx=True)
-        if not created:
-            return
 
         opened_ans_db = await self.app.store.rounds.get_opened_answers(
             round_.id
@@ -242,6 +235,7 @@ class RoundService:
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
+                sec=60,
                 on_tick=on_tick,
                 on_finish=on_finish,
                 on_interrupt=on_interrupt,
