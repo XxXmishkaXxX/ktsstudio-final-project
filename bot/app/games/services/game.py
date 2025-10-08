@@ -25,6 +25,9 @@ class GameService:
 
     async def stop_game(self, game_id: int, chat_id: int):
         await self.app.store.games.set_game_state(game_id, GameState.finished)
+        round_id = await self.app.store.games.get_current_round_id(game_id)
+        if round_id:
+            await self.app.round_service.finish_round(round_id)
         message_id = int(
             await self.app.cache.pool.get(f"game:{game_id}:message_id")
         )
@@ -166,6 +169,17 @@ class GameService:
             )
             await self.update_state(game_id, chat_id, message_id)
             return
+
+        if current_round.round_number != 1:
+            response = await self.app.telegram.send_message(
+                chat_id,
+                f"Раунд {current_round.round_number}",
+                parse_mode="HTML",
+            )
+            message_id = response["result"]["message_id"]
+            await self.app.cache.pool.set(
+                f"game:{game_id}:message_id", message_id
+            )
 
         await self.app.round_service.handle_round(
             current_round, game_id, chat_id, message_id, teams
