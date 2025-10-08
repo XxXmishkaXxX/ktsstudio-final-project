@@ -10,6 +10,11 @@ from app.games.services.setup import (
     TimerService,
     setup_services,
 )
+from app.recovery.setup import (
+    RecoveryService,
+    HeartbeatService,
+    setup_recovery
+)
 from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
 from app.store import Store, setup_store
 from app.store.cache.cache import Cache
@@ -30,6 +35,8 @@ class Application(AiohttpApplication):
     renderer: GameRenderer
     round_service: RoundService
     game_service: GameService
+    heartbeat: HeartbeatService
+    recovery: RecoveryService
 
 
 class Request(AiohttpRequest):
@@ -47,5 +54,6 @@ def setup_app(config_path: str) -> Application:
     setup_telegram_client(app)
     setup_routes(app)
     setup_rabbitmq(app)
+    setup_recovery(app)
 
     return app
