@@ -63,6 +63,29 @@ class GameAccessor(BaseAccessor):
                 update(Game).where(Game.id == game_id).values(state=state.value)
             )
             await session.commit()
+    
+    async def get_games_by_states(
+        self,
+        states: list[GameState],
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> list[Game]:
+        if not states:
+            return []
+
+        states_values = [state.value for state in states]
+
+        async with self.app.database.session() as session:
+            query = select(Game).where(Game.state.in_(states_values))
+            if limit is not None:
+                query = query.limit(limit)
+            if offset is not None:
+                query = query.offset(offset)
+
+            result = await session.execute(query)
+            games = result.scalars().all()
+
+        return games
 
     async def get_current_round_id(self, game_id: int):
         async with self.app.database.session() as session:
