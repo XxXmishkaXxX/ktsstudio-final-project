@@ -93,7 +93,7 @@ class GameService:
 
     async def _handle_created(self, game_id, chat_id, message_id):
         teams = await self.app.store.teams.get_game_teams(game_id)
-        
+
         ready = all(len(t.members) == 5 for t in teams[:2])
         if ready:
             await self.app.store.games.set_game_state(

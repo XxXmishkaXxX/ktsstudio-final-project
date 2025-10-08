@@ -32,9 +32,7 @@ class RoundService:
             )
         return None
 
-    async def handle_round(
-        self, current_round, game_id, chat_id, message_id
-    ):
+    async def handle_round(self, current_round, game_id, chat_id, message_id):
         state = current_round.state
         if state == RoundState.faceoff:
             await self._handle_faceoff(
@@ -55,9 +53,7 @@ class RoundService:
                 game_id, chat_id, message_id
             )
 
-    async def _handle_faceoff(
-        self, round_, game_id, chat_id, message_id
-    ):
+    async def _handle_faceoff(self, round_, game_id, chat_id, message_id):
         self.app.logger.info("IN FACE OF")
         teams = await self.app.store.teams.get_game_teams(game_id)
         buzzer_ids = await self.choose_buzzers(game_id)
@@ -94,9 +90,7 @@ class RoundService:
             updated_round = await self.app.store.rounds.get_round_by_id(
                 round_.id
             )
-            await self.handle_round(
-                updated_round, game_id, chat_id, message_id
-            )
+            await self.handle_round(updated_round, game_id, chat_id, message_id)
 
         _ = asyncio.create_task(  # noqa: RUF006
             self.app.timer_service.start_timer(

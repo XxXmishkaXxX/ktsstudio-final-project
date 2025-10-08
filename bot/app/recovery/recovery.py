@@ -32,7 +32,7 @@ class RecoveryService:
                     f"game:{game_id}:message_id"
                 )
                 message_id = int(message_id) if message_id else None
-                
+
                 lock_key = f"game:{game_id}:lock"
 
                 acquired = await self.app.cache.pool.set(

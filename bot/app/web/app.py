@@ -10,11 +10,7 @@ from app.games.services.setup import (
     TimerService,
     setup_services,
 )
-from app.recovery.setup import (
-    RecoveryService,
-    HeartbeatService,
-    setup_recovery
-)
+from app.recovery.setup import HeartbeatService, RecoveryService, setup_recovery
 from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
 from app.store import Store, setup_store
 from app.store.cache.cache import Cache
