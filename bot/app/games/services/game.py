@@ -78,8 +78,6 @@ class GameService:
         self, game_id: int, chat_id: int, message_id: int | None = None
     ):
         state = await self.app.store.games.get_game_state(game_id)
-        teams = await self.app.store.teams.get_game_teams(game_id)
-
         handler_map = {
             GameState.created: self._handle_created,
             GameState.starting: self._handle_starting,
@@ -89,11 +87,13 @@ class GameService:
 
         handler = handler_map.get(state)
         if handler:
-            await handler(game_id, chat_id, teams, message_id)
+            await handler(game_id, chat_id, message_id)
 
     # ----------------- handlers for each game state -----------------
 
-    async def _handle_created(self, game_id, chat_id, teams, message_id):
+    async def _handle_created(self, game_id, chat_id, message_id):
+        teams = await self.app.store.teams.get_game_teams(game_id)
+        
         ready = all(len(t.members) == 5 for t in teams[:2])
         if ready:
             await self.app.store.games.set_game_state(
@@ -105,15 +105,13 @@ class GameService:
                 game_id, chat_id, teams, message_id
             )
 
-    async def _handle_starting(self, game_id, chat_id, teams, message_id):
+    async def _handle_starting(self, game_id, chat_id, message_id):
         redis_key = f"game:{game_id}:timer"
         lock_key = f"{redis_key}:lock"
 
-        created = await self.app.cache.pool.set(redis_key, "5", nx=True)
-        if not created:
-            return
+        await self.app.heartbeat.start(game_id)
 
-        # prepare team lists to pass to renderer on ticks
+        teams = await self.app.store.teams.get_game_teams(game_id)
         team_1 = [m.user.username or str(m.user_id) for m in teams[0].members]
         team_2 = [m.user.username or str(m.user_id) for m in teams[1].members]
 
@@ -153,13 +151,14 @@ class GameService:
             self.app.timer_service.start_timer(
                 redis_key,
                 lock_key,
+                sec=5,
                 on_tick=on_tick,
                 on_finish=on_finish,
                 on_interrupt=on_interrupt,
             )
         )
 
-    async def _handle_in_progress(self, game_id, chat_id, teams, message_id):
+    async def _handle_in_progress(self, game_id, chat_id, message_id):
         current_round = (
             await self.app.round_service.get_current_or_create_round(game_id)
         )
@@ -182,11 +181,11 @@ class GameService:
             )
 
         await self.app.round_service.handle_round(
-            current_round, game_id, chat_id, message_id, teams
+            current_round, game_id, chat_id, message_id
         )
 
-    async def _handle_finished(self, game_id, chat_id, teams, message_id):
-        team1, team2 = teams
+    async def _handle_finished(self, game_id, chat_id, message_id):
+        team1, team2 = await self.app.store.teams.get_game_teams(game_id)
 
         if team1.score > team2.score:
             winners, score = (
@@ -207,6 +206,7 @@ class GameService:
                     member.user_id, UserState.idle
                 )
 
+        await self.app.heartbeat.stop(game_id)
         await self.app.renderer.render_finished(
             chat_id, message_id, winners=winners, score=score
         )
