@@ -228,7 +228,7 @@ class RoundService:
                 f"round:{round_.id}:team:{round_.current_team_id}:strikes"
             )
             self.app.logger.info(strikes)
-            if int(strikes) >= 3:
+            if int(strikes or 0) >= 3:
                 await self.switch_team(round_)
             else:
                 await self.set_round_state(round_.id, RoundState.finished)
