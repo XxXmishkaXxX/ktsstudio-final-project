@@ -75,6 +75,7 @@ class TimerService:
         self,
         redis_key: str,
         lock_key: str,
+        sec: int,
         on_tick: typing.Callable[[int], typing.Awaitable[None]],
         on_finish: typing.Callable[[], typing.Awaitable[None]],
         on_interrupt: typing.Callable[
@@ -83,12 +84,14 @@ class TimerService:
     ):
         redis = self.app.cache.pool
         token = uuid.uuid4().hex
-
+        
         got = await redis.set(lock_key, token, nx=True, ex=15)
         if not got:
             self.app.logger.info("Another worker handles timer %s", redis_key)
             return
-
+        
+        await self.app.cache.pool.set(redis_key, str(sec), nx=True)
+        
         try:
             await self._tick(
                 redis, redis_key, lock_key, on_tick, on_finish, on_interrupt
