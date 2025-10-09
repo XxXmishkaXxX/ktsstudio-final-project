@@ -26,7 +26,7 @@ async def test_webhook_invalid_payload(client):
 
 
 @pytest.mark.asyncio
-async def test_webhook_publishes(client, mock_rabbitmq):
+async def test_webhook_publishes(client, mock_rabbitmq, reset_rabbitmq):
     payload = {"update_id": 123, "message": {"text": "Hello"}}
     resp = await client.post("/webhook", json=payload)
     data = await resp.json()
