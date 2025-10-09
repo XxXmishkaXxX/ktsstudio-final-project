@@ -1,16 +1,13 @@
 from typing import TYPE_CHECKING
 
-from app.store.base.accessor import BaseAccessor
+from .base import BaseAccessor
 from passlib.hash import pbkdf2_sha256
-from shared_models.admins import AdminModel
+from db_core.models.admins import AdminModel
 from sqlalchemy import select
-
-if TYPE_CHECKING:
-    from app.web.app import Application
 
 
 class AdminAccessor(BaseAccessor):
-    async def connect(self, app: "Application") -> None:
+    async def connect(self, app) -> None:
         config_admin = app.config.admin
         email = config_admin.email
         password = config_admin.password

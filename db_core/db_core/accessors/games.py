@@ -1,5 +1,5 @@
-from shared_models.games import Game, GameState
-from app.store.base.accessor import BaseAccessor
+from db_core.models.games import Game, GameState
+from .base import BaseAccessor
 from sqlalchemy import and_, select, update
 
 

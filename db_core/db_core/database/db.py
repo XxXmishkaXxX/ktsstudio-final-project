@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-from app.store.database.sqlachemy_base import BaseModel
+from db_core.models.base import BaseModel
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -10,12 +10,9 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
-if TYPE_CHECKING:
-    from app.web.app import Application
-
 
 class Database:
-    def __init__(self, app: "Application") -> None:
+    def __init__(self, app) -> None:
         self.app = app
         self.engine: AsyncEngine | None = None
         self._db: type[DeclarativeBase] = BaseModel

@@ -1,10 +1,10 @@
 import random
 
-from shared_models.games import Game
-from shared_models.questions import Question
-from shared_models.rounds import Round, RoundAnswer, RoundState
-from shared_models.teams import Team, TeamMember
-from app.store.base.accessor import BaseAccessor
+from db_core.models.games import Game
+from db_core.models.questions import Question
+from db_core.models.rounds import Round, RoundAnswer, RoundState
+from db_core.models.teams import Team, TeamMember
+from .base import BaseAccessor
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload

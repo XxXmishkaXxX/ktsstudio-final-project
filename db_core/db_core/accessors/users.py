@@ -1,5 +1,5 @@
-from app.store.base.accessor import BaseAccessor
-from shared_models.users import State, User
+from .base import BaseAccessor
+from db_core.models.users import State, User
 from sqlalchemy import select
 
 

@@ -1,5 +1,5 @@
-from shared_models.teams import Team, TeamMember
-from app.store.base.accessor import BaseAccessor
+from db_core.models.teams import Team, TeamMember
+from .base import BaseAccessor
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
