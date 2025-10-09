@@ -1,4 +1,3 @@
-import asyncio
 import typing
 
 if typing.TYPE_CHECKING:
