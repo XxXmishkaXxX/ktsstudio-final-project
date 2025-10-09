@@ -18,4 +18,5 @@ ENV PYTHONUNBUFFERED=1 \
 
 EXPOSE 8082
 
-CMD ["python", "main.py"]
+CMD ["sh", "-c", "alembic upgrade head && python main.py"]
+
