@@ -15,6 +15,12 @@ class QuestionSchema(Schema):
     @validates_schema
     def validate_positions(self, data, **kwargs):
         positions = [answer["position"] for answer in data["answers"]]
+        if len(data["answers"]) != 5:
+            raise ValidationError(
+                "Должно быть ровно 5 ответов",
+                field_name="answers",
+            )
+
         if len(positions) != len(set(positions)):
             raise ValidationError(
                 "Все позиции ответов должны быть уникальны",
