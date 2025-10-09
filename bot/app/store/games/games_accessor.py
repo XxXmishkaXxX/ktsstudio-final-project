@@ -1,4 +1,4 @@
-from app.games.models.games import Game, GameState
+from shared_models.games import Game, GameState
 from app.store.base.accessor import BaseAccessor
 from sqlalchemy import and_, select, update
 

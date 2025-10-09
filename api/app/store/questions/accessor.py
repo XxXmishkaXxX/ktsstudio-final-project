@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from app.questions.models import AnswerOption, Question
 from app.store.base.accessor import BaseAccessor
+from shared_models.questions import AnswerOption, Question
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 

@@ -1,7 +1,7 @@
-from app.admin.models import AdminModel
 from app.store import Store
 from app.web.config import Config
 from passlib.hash import pbkdf2_sha256
+from shared_models.admins import AdminModel
 
 
 class TestAdminAccessor:

@@ -1,23 +1,25 @@
 from app.store.base.accessor import BaseAccessor
-from app.users.models import State, User
+from shared_models.users import State, User
 from sqlalchemy import select
 
 
 class UserAccessor(BaseAccessor):
-    async def create_user(self, tg_id: int, username: str):
+
+    async def create_or_get_user(self, user_data: dict) -> User:
+        tg_id = user_data["id"]
+        username = user_data["username"]
+
         async with self.app.database.session() as session:
-            user = User(id=tg_id, username=username)
-            session.add(user)
-            await session.commit()
-            await session.refresh(user)
+            result = await session.execute(select(User).where(User.id == tg_id))
+            user = result.scalar_one_or_none()
+
+            if user is None:
+                user = User(id=tg_id, username=username)
+                session.add(user)
+                await session.commit()
+                await session.refresh(user)
 
             return user
-
-    async def get_user(self, tg_id: int):
-        async with self.app.database.session() as session:
-            return (
-                await session.execute(select(User).where(User.id == tg_id))
-            ).scalar_one_or_none()
 
     async def set_state_user(self, tg_id: int, state: str):
         async with self.app.database.session() as session:

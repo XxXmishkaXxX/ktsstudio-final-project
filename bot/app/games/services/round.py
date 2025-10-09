@@ -5,7 +5,7 @@ import typing
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
-from app.games.models.rounds import Round, RoundState
+from shared_models.rounds import Round, RoundState
 
 
 class RoundService:

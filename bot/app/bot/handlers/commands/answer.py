@@ -1,8 +1,8 @@
 import typing
 
-from app.games.models.rounds import RoundState
+from shared_models.rounds import RoundState
 from app.games.services.round import RoundService
-from app.users.models import User
+from shared_models.users import User
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

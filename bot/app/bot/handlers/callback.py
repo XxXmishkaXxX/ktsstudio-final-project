@@ -2,7 +2,6 @@ import typing
 
 from app.bot.handlers.callbacks.buzzer import press_buzzer_callback
 from app.bot.handlers.callbacks.join import join_game_callback
-from app.bot.handlers.utils.users import create_or_get_user
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -18,7 +17,7 @@ async def handle_callback(
     user_data: dict,
     **kwargs,
 ):
-    user = await create_or_get_user(app, user_data)
+    user = await app.store.users.create_or_get_user(user_data)
 
     if callback_type == "join":
         team = kwargs.get("team")

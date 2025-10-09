@@ -1,4 +1,4 @@
-from app.games.models.teams import Team, TeamMember
+from shared_models.teams import Team, TeamMember
 from app.store.base.accessor import BaseAccessor
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload

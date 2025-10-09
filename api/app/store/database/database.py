@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
-from app.store.database.sqlachemy_base import BaseModel
+from shared_models.base import BaseModel
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,

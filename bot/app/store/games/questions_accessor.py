@@ -1,6 +1,6 @@
 import random
 
-from app.games.models.questions import Question
+from shared_models.questions import Question
 from app.store.base.accessor import BaseAccessor
 from sqlalchemy import select
 

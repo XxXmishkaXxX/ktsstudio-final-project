@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
-from app.admin.models import AdminModel
 from app.store.base.accessor import BaseAccessor
 from passlib.hash import pbkdf2_sha256
+from shared_models.admins import AdminModel
 from sqlalchemy import select
 
 if TYPE_CHECKING:
