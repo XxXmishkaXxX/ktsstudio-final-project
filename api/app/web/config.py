@@ -70,6 +70,4 @@ def setup_config(app: "Application", config_path: str):
         email=admin_conf.get("email", "admin@admin.ru"),
         password=admin_conf.get("password", "password"),
     )
-    app.logger.info(admin_conf.get("password"))
-    app.logger.info(admin_conf.get("email"))
     app.config = Config(server=server, db=db, admin=admin, session=session)
