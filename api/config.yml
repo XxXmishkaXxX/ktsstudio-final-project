@@ -1,6 +1,3 @@
-bot:
-  token: "8425361906:AAGf6OIP-owwcb-erbhg2bjEo6i_redg2Ao"
-
 server:
   host: "0.0.0.0"
   port: 8082
