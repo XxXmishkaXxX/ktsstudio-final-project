@@ -11,4 +11,7 @@ def setup_recovery(app: "Application"):
     app.heartbeat = HeartbeatService(app)
     app.recovery = RecoveryService(app)
 
-    app.on_startup.append(asyncio.create_task(app.recovery.recover_all_games()))
+    async def on_startup(app):
+        await app.recovery.recover_all_games()
+
+    app.on_startup.append(on_startup)
