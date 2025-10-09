@@ -47,8 +47,10 @@ class View(AiohttpView):
         return self.request.get("data", {})
 
 
+app = Application()
+
+
 def setup_app(config_path: str) -> Application:
-    app = Application()
     setup_logging(app)
     setup_config(app, config_path)
     setup_store(app)
