@@ -1,6 +1,6 @@
 bot:
-  token: "8425361906:AAGf6OIP-owwcb-erbhg2bjEo6i_redg2Ao"        # Токен бота от BotFather
-  webhook_url: "https://ztxbm4-188-16-37-200.ru.tuna.am/webhook"  # URL вебхука
+  token: "bot token"        # Токен бота от BotFather
+  webhook_url: "https://example.com/webhook"  # URL вебхука
 
 server:
   host: "0.0.0.0"
