@@ -21,8 +21,10 @@ class Request(AiohttpRequest):
         return super().app()
 
 
+app = Application()
+
+
 def setup_app(config_path: str) -> Application:
-    app = Application()
     setup_logging(app)
     setup_config(app, config_path)
     setup_webhook(app)
