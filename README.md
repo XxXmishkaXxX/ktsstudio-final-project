@@ -93,7 +93,7 @@ docker-compose up --build
 | `GET`  | `/questions/?page=1&limit=10` | Получить список вопросов с пагинацией. Возвращает объект с `page`, `limit`, `total` и `items`. |
 | `DELETE` | `/questions`     | Удалить вопрос по `id`. Принимает JSON с полем `id` (`QuestionDeleteSchema`). |
 
-**Логин администратора:**
+### Логин администратора:
 
 ```bash
 curl -X POST http://localhost:8000/admin/login \
@@ -133,4 +133,5 @@ curl http://localhost:8000/questions/?page=1&limit=10
 ## Благодарности
 
 - [KTS Studio](https://ktsstudio.ru/) — курс и поддержка
+
 
