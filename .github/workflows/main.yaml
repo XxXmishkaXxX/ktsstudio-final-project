@@ -11,3 +11,35 @@ jobs:
       - name: Install ruff
         run: pip install ruff==0.4.2
       - run: ruff format --check && ruff check --no-fix
+
+  test_api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install dependencies
+        working-directory: api
+        run: |
+          pip install -r requirements.txt
+      - name: Run tests
+        working-directory: api
+        run: |
+          pytest
+
+  test_webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install dependencies
+        working-directory: webhook
+        run: |
+          pip install -r requirements.txt
+      - name: Run tests
+        working-directory: webhook
+        run: |
+          pytest
