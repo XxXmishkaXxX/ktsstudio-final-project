@@ -1,7 +1,7 @@
 from aiohttp_apispec import request_schema, response_schema
 from aiohttp_session import new_session
 from app.admin.schemes import AdminSchema
-from app.store.admin.accessor import AdminAccessor
+from db_core.accessors.admins import AdminAccessor
 from app.web.app import View
 from app.web.mixins import AdminRequiredMixin
 from app.web.utils import error_json_response, json_response

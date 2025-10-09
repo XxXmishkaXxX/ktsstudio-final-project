@@ -4,8 +4,8 @@ import typing
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
-from shared_models.games import GameState
-from shared_models.users import State as UserState
+from db_core.models.games import GameState
+from db_core.models.users import State as UserState
 
 
 class GameService:

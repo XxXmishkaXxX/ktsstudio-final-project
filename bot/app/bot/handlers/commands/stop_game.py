@@ -1,6 +1,6 @@
 import typing
 
-from shared_models.users import User
+from db_core.models.users import User
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

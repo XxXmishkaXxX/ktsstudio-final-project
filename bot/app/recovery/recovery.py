@@ -4,7 +4,7 @@ import typing
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
-from app.games.models.games import GameState
+from db_core.models.games import GameState
 
 
 class RecoveryService:
