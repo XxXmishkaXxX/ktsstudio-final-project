@@ -82,19 +82,30 @@ docker-compose up --build
 
 ## API
 
-Проект предоставляет REST API для работы с вопросами игры. Все эндпоинты асинхронные и реализованы с использованием **aiohttp + aiohttp-apispec**.
+Проект предоставляет REST API для работы с вопросами игры. Все эндпоинты асинхронные и реализованы с использованием **aiohttp + aiohttp-apispec**. Перед тем как работать с вопросами, нужно залогиниться, как админ.
 
 ### Эндпоинты
-
-| Метод | URL                  | Описание |
-|-------|---------------------|----------|
-| `POST` | `/questions/`       | Создать новый вопрос. Принимает JSON с полями вопроса (`QuestionSchema`). |
+| Метод  | URL           | Описание |
+|--------|---------------|----------|
+| `POST` | `/admin/login` | Логин администратора. Принимает JSON с полями `email` и `password` (`AdminSchema`). Возвращает данные админа и создаёт сессию. |
+| `GET`  | `/admin/current` | Получить данные текущего администратора (только для залогиненных админов). |
+| `POST` | `/questions`       | Создать новый вопрос. Принимает JSON с полями вопроса (`QuestionSchema`). |
 | `GET`  | `/questions/?page=1&limit=10` | Получить список вопросов с пагинацией. Возвращает объект с `page`, `limit`, `total` и `items`. |
-| `DELETE` | `/questions/`     | Удалить вопрос по `id`. Принимает JSON с полем `id` (`QuestionDeleteSchema`). |
+| `DELETE` | `/questions`     | Удалить вопрос по `id`. Принимает JSON с полем `id` (`QuestionDeleteSchema`). |
 
+**Логин администратора:**
+
+```bash
+curl -X POST http://localhost:8000/admin/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "admin@example.com",
+  "password": "your_password"
+}'
+```
 ### Создание вопроса:
 ```bash
-curl -X POST http://localhost:8000/questions/ \
+curl -X POST http://localhost:8082/questions \
 -H "Content-Type: application/json" \
 -d '{
   "text": "Пример вопроса",
@@ -122,3 +133,4 @@ curl http://localhost:8000/questions/?page=1&limit=10
 ## Благодарности
 
 - [KTS Studio](https://ktsstudio.ru/) — курс и поддержка
+
