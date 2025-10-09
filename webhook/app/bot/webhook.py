@@ -33,7 +33,7 @@ class TelegramBot:
         return await self.api_call(
             "deleteWebhook", {"drop_pending_updates": drop_pending_updates}
         )
-    
+
 
 def setup_webhook(app: "Application"):
     app.bot = TelegramBot(app)
@@ -41,15 +41,10 @@ def setup_webhook(app: "Application"):
     async def start(_app):
         await app.bot.start()
         try:
-            # 1️⃣ удаляем старый вебхук и сбрасываем накопленные апдейты
             await app.bot.delete_webhook(drop_pending_updates=True)
-            app.logger.info("✅ Old webhook deleted, pending updates cleared")
-
-            # 2️⃣ ставим новый вебхук
             await app.bot.set_webhook(app.config.bot.webhook_url)
-            app.logger.info(f"✅ New webhook set: {app.config.bot.webhook_url}")
-        except Exception as e:
-            app.logger.error(f"⚠️ Failed to setup webhook: {e}")
+        except Exception:
+            app.logger.exception("⚠️ Failed to setup webhook:")
 
     async def close(_app):
         await app.bot.close()
