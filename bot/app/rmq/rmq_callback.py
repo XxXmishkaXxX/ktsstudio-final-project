@@ -1,64 +1,50 @@
-import json
 import typing
 
 import aio_pika
 
 from app.bot.handlers.callback import handle_callback
 from app.bot.handlers.command import handle_command
+from app.rmq.utils import (
+    extract_callback_data,
+    extract_message_data,
+    parse_json_body,
+)
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
 
 async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
+    """Главная точка обработки сообщений из RabbitMQ."""
     async with message.process():
         try:
-            payload = json.loads(message.body.decode())
+            payload = parse_json_body(message)
 
             if "callback_query" in payload:
-                chat_id = payload["callback_query"]["message"]["chat"]["id"]
-
-                data = json.loads(payload["callback_query"]["data"])
-                callback_type = data["t"]
-                game_id = data["g"]
-                round_id = data.get("r")
-                team = data.get("team")
-
-                message_id = payload["callback_query"]["message"]["message_id"]
-                callback_id = payload["callback_query"]["id"]
-                user_data = payload["callback_query"]["from"]
-
+                data = extract_callback_data(payload)
                 await handle_callback(
                     app,
-                    callback_type,
-                    game_id,
-                    chat_id,
-                    callback_id,
-                    message_id,
-                    user_data,
-                    team=team,
-                    round_id=round_id,
+                    data["callback_type"],
+                    data["game_id"],
+                    data["chat_id"],
+                    data["callback_id"],
+                    data["message_id"],
+                    data["user_data"],
+                    team=data["team"],
+                    round_id=data["round_id"],
                 )
+
             elif "message" in payload:
-                msg = payload["message"]
-                chat_id = msg["chat"]["id"]
-                text = msg.get("text", "")
-                user_data = msg.get("from", {})
-                chat_type = msg["chat"]["type"]
-
-                command = None
-                args = ""
-
-                for e in msg.get("entities", []):
-                    if e["type"] == "bot_command":
-                        command = text[e["offset"] : e["offset"] + e["length"]]
-                        args = text[e["offset"] + e["length"] :].strip()
-                        break
-
-                if command:
+                msg_data = extract_message_data(payload)
+                if msg_data["command"]:
                     await handle_command(
-                        app, command, chat_id, user_data, chat_type, args=args
+                        app,
+                        msg_data["command"],
+                        msg_data["chat_id"],
+                        msg_data["user_data"],
+                        msg_data["chat_type"],
+                        args=msg_data["args"],
                     )
 
-        except Exception as e:
-            app.logger.error("⚠️ Failed to handle message: %s", e)
+        except Exception:
+            app.logger.exception("⚠️ Failed to handle message:")
