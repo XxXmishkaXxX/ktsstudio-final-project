@@ -50,3 +50,6 @@ dependencies = [
 db-core = { path = "../db_core", editable = true }
 
 [tool.uv]
+
+[tool.ruff]
+extend = "../pyproject.toml"
