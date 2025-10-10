@@ -1,4 +1,5 @@
 from aiohttp_apispec import querystring_schema, request_schema, response_schema
+
 from app.questions.schemes import (
     QuestionDeleteSchema,
     QuestionSchema,
@@ -13,8 +14,7 @@ class QuestionsView(AdminRequiredMixin, View):
     @request_schema(QuestionSchema)
     @response_schema(QuestionSchema, 200)
     async def post(self):
-        data = self.data
-        question = await self.store.questions.create_question(data)
+        question = await self.store.questions.create_question(self.data)
         return json_response(QuestionSchema().dump(question))
 
     @querystring_schema(QuestionsQuerySchema)
@@ -45,12 +45,11 @@ class QuestionsView(AdminRequiredMixin, View):
     async def delete(
         self,
     ):
-        data = self.data
-        question = await self.store.questions.delete_question(data)
+        question = await self.store.questions.delete_question(self.data)
         if question:
             return json_response(QuestionSchema().dump(question))
         return error_json_response(
             http_status=400,
             status="error",
-            message=f"Нет вопроса с id - {data['id']}",
+            message=f"Нет вопроса с id - {self.data['id']}",
         )

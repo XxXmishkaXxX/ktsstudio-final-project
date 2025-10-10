@@ -4,6 +4,7 @@ import os
 import pytest
 from aiohttp.test_utils import TestClient
 from db_core.database.db import Database
+
 from app.web.app import setup_app
 
 

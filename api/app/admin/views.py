@@ -1,7 +1,8 @@
 from aiohttp_apispec import request_schema, response_schema
 from aiohttp_session import new_session
-from app.admin.schemes import AdminSchema
 from db_core.accessors.admins import AdminAccessor
+
+from app.admin.schemes import AdminSchema
 from app.web.app import View
 from app.web.mixins import AdminRequiredMixin
 from app.web.utils import error_json_response, json_response
@@ -11,14 +12,12 @@ class AdminLoginView(View):
     @request_schema(AdminSchema)
     @response_schema(AdminSchema, 200)
     async def post(self):
-        email = self.data.get("email")
-        password = self.data.get("password")
 
         admin_accessor: AdminAccessor = self.store.admins
-        admin = await admin_accessor.get_by_email(email)
+        admin = await admin_accessor.get_by_email(self.data["email"])
 
         if not admin or not await admin_accessor.verify_password(
-            password, admin.password
+            self.data["password"], admin.password
         ):
             return error_json_response(
                 http_status=403,
