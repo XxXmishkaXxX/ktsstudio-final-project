@@ -11,3 +11,6 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.ruff]
+extend = "../pyproject.toml"
