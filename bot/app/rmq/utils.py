@@ -22,9 +22,9 @@ def extract_callback_data(payload: dict) -> dict:
         "chat_id": chat_id,
         "callback_id": callback_id,
         "message_id": message_id,
-        "callback_type": data["t"],
-        "game_id": data["g"],
-        "round_id": data.get("r"),
+        "callback_type": data["type"],
+        "game_id": data["game"],
+        "round_id": data.get("round"),
         "team": data.get("team"),
         "user_data": user_data,
     }
