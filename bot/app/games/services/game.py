@@ -20,7 +20,6 @@ class GameService:
             await self.app.store.teams.create_team(game.id)
 
         await self.app.cache.pool.set(f"game:{game.id}:user:started", tg_id)
-        self.app.logger.info("Create game")
         await self.update_state(game.id, chat_id)
 
     async def stop_game(self, game_id: int, chat_id: int):

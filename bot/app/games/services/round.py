@@ -15,7 +15,9 @@ class RoundService:
     async def get_current_or_create_round(self, game_id: int) -> Round:
         round_ = await self.app.store.rounds.get_current_round(game_id)
         if not round_:
-            return await self.app.store.rounds.create_round(game_id, round_number=1)
+            return await self.app.store.rounds.create_round(
+                game_id, round_number=1
+            )
 
         if round_.state in [
             RoundState.faceoff,
@@ -34,7 +36,9 @@ class RoundService:
         state = current_round.state
         match state:
             case RoundState.faceoff:
-                await self._handle_faceoff(current_round, game_id, chat_id, message_id)
+                await self._handle_faceoff(
+                    current_round, game_id, chat_id, message_id
+                )
             case RoundState.buzzer_answer:
                 await self._handle_buzzer_answer(
                     current_round, game_id, chat_id, message_id
@@ -46,7 +50,9 @@ class RoundService:
             case RoundState.finished:
                 await self.finish_round(current_round.id)
 
-                await self.app.game_service.update_state(game_id, chat_id, message_id)
+                await self.app.game_service.update_state(
+                    game_id, chat_id, message_id
+                )
 
     async def _handle_faceoff(self, round_, game_id, chat_id, message_id):
         teams = await self.app.store.teams.get_game_teams(game_id)
@@ -81,7 +87,9 @@ class RoundService:
         async def on_interrupt():
             await self.app.cache.pool.delete(lock_key)
             await self.set_round_state(round_.id, RoundState.buzzer_answer)
-            updated_round = await self.app.store.rounds.get_round_by_id(round_.id)
+            updated_round = await self.app.store.rounds.get_round_by_id(
+                round_.id
+            )
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
         _ = asyncio.create_task(  # noqa: RUF006
@@ -123,13 +131,17 @@ class RoundService:
                 await self.set_round_state(round_.id, RoundState.team_play)
 
             await self.app.store.rounds.overwrite_buzzer(round_.id, None)
-            updated_round = await self.app.store.rounds.get_round_by_id(round_.id)
+            updated_round = await self.app.store.rounds.get_round_by_id(
+                round_.id
+            )
 
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
         async def on_interrupt():
             await self.app.cache.pool.delete(lock_key)
-            updated_round = await self.app.store.rounds.get_round_by_id(round_.id)
+            updated_round = await self.app.store.rounds.get_round_by_id(
+                round_.id
+            )
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
         _ = asyncio.create_task(  # noqa: RUF006
@@ -147,7 +159,9 @@ class RoundService:
         redis_key = f"round:{round_.id}:teamplay_timer"
         lock_key = f"{redis_key}:lock"
 
-        opened_ans_db = await self.app.store.rounds.get_opened_answers(round_.id)
+        opened_ans_db = await self.app.store.rounds.get_opened_answers(
+            round_.id
+        )
         opened_ans_data = [
             {
                 "position": ans.answer_option.position,
@@ -191,7 +205,9 @@ class RoundService:
             await self.switch_team(round_)
             await self.app.cache.pool.delete(redis_key)
             await self.app.cache.pool.delete(lock_key)
-            updated_round = await self.app.store.rounds.get_round_by_id(round_.id)
+            updated_round = await self.app.store.rounds.get_round_by_id(
+                round_.id
+            )
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
         async def on_interrupt():
@@ -202,7 +218,9 @@ class RoundService:
                 await self.switch_team(round_)
             else:
                 await self.set_round_state(round_.id, RoundState.finished)
-            updated_round = await self.app.store.rounds.get_round_by_id(round_.id)
+            updated_round = await self.app.store.rounds.get_round_by_id(
+                round_.id
+            )
             await self.app.cache.pool.delete(lock_key)
             await self.handle_round(updated_round, game_id, chat_id, message_id)
 
@@ -307,7 +325,9 @@ class RoundService:
         answers = question.answers
         total_answers = len(answers)
 
-        ans_obj = next((a for a in answers if a.text.lower() == answer.lower()), None)
+        ans_obj = next(
+            (a for a in answers if a.text.lower() == answer.lower()), None
+        )
         if not ans_obj:
             return {"found": False}
 
@@ -317,11 +337,15 @@ class RoundService:
         if not added:
             return {"found": False, "reason": "already_opened"}
 
-        opened_count = await self.app.store.rounds.count_opened_answers(round_id)
+        opened_count = await self.app.store.rounds.count_opened_answers(
+            round_id
+        )
         all_opened = opened_count == total_answers
 
         sorted_answers = sorted(answers, key=lambda a: a.points, reverse=True)
-        rank = next(idx for idx, a in enumerate(sorted_answers) if a.id == ans_obj.id)
+        rank = next(
+            idx for idx, a in enumerate(sorted_answers) if a.id == ans_obj.id
+        )
 
         return {
             "found": True,
@@ -344,7 +368,9 @@ class RoundService:
         if not round_.current_team_id:
             return None
 
-        teams_in_game = await self.app.store.teams.get_game_teams(round_.game_id)
+        teams_in_game = await self.app.store.teams.get_game_teams(
+            round_.game_id
+        )
         if len(teams_in_game) < 2:
             return round_.current_team_id
 
@@ -360,7 +386,9 @@ class RoundService:
 
         return round_.current_team_id
 
-    async def buzzer_answer_question(self, game_id: int, user_id: int, ans: str):
+    async def buzzer_answer_question(
+        self, game_id: int, user_id: int, ans: str
+    ):
         round_ = await self.app.store.rounds.get_current_round(game_id)
         buzzer_id = round_.current_buzzer_id
         if user_id != buzzer_id:
@@ -370,7 +398,9 @@ class RoundService:
         buzzers = await self.get_current_buzzers(game_id)
 
         if res["found"] and res["rank"] == 0:
-            team_id = await self.app.store.teams.get_team_by_user_id(game_id, user_id)
+            team_id = await self.app.store.teams.get_team_by_user_id(
+                game_id, user_id
+            )
             round_.current_team_id = team_id
             await self.set_round_state(round_.id, RoundState.team_play)
             await self.add_score(round_.id, res["score"])
@@ -397,14 +427,18 @@ class RoundService:
                 await self.set_round_state(round_.id, RoundState.team_play)
         else:
             round_.temp_answer = res if res["found"] else {"found": False}
-            team_id = await self.app.store.teams.get_team_by_user_id(game_id, user_id)
+            team_id = await self.app.store.teams.get_team_by_user_id(
+                game_id, user_id
+            )
             round_.current_team_id = team_id
             next_buzzer = next((b for b in buzzers if b != user_id), None)
             await self.app.store.rounds.overwrite_buzzer(round_.id, next_buzzer)
             if res["found"]:
                 await self.add_score(round_.id, res["score"])
 
-        await self.app.cache.pool.delete(f"round:{round_.id}:buzzer_answer_timer")
+        await self.app.cache.pool.delete(
+            f"round:{round_.id}:buzzer_answer_timer"
+        )
         await self.app.store.rounds.update_round(round_)
 
     async def team_answer_question(
@@ -426,7 +460,9 @@ class RoundService:
         if res["found"]:
             await self.add_score(round_.id, res["score"])
 
-            opened_answers = await self.app.store.rounds.get_opened_answers(round_.id)
+            opened_answers = await self.app.store.rounds.get_opened_answers(
+                round_.id
+            )
             opened_answers_data = [
                 {
                     "position": ans.answer_option.position,
@@ -479,7 +515,9 @@ class RoundService:
             sec=sec,
         )
         if count_strikes >= 3:
-            await self.app.cache.pool.delete(f"round:{round_.id}:teamplay_timer")
+            await self.app.cache.pool.delete(
+                f"round:{round_.id}:teamplay_timer"
+            )
             return
 
         if res.get("all_opened"):
@@ -488,4 +526,6 @@ class RoundService:
                 round_.current_team.id, final_score
             )
             await self.set_round_state(round_.id, RoundState.finished)
-            await self.app.cache.pool.delete(f"round:{round_.id}:teamplay_timer")
+            await self.app.cache.pool.delete(
+                f"round:{round_.id}:teamplay_timer"
+            )

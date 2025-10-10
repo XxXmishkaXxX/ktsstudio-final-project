@@ -1,7 +1,8 @@
 import typing
 
-from app.games.services.round import RoundService
 from db_core.models.users import User
+
+from app.games.services.round import RoundService
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

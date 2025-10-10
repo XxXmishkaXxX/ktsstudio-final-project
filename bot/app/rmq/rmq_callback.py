@@ -2,6 +2,7 @@ import json
 import typing
 
 import aio_pika
+
 from app.bot.handlers.callback import handle_callback
 from app.bot.handlers.command import handle_command
 
