@@ -1,16 +1,23 @@
 from db_core.models.games import Game, GameState
+from db_core.models.teams import Team
 from .base import BaseAccessor
 from sqlalchemy import and_, select, update
 
 
 class GameAccessor(BaseAccessor):
-    async def create_game(self, chat_id: int) -> Game:
+    async def create_game_with_teams(self, chat_id: int) -> Game:
         async with self.app.database.session() as session:
-            game = Game(chat_id=chat_id, state=GameState.created)
-            session.add(game)
-            await session.commit()
-            await session.refresh(game)
-            return game
+            async with session.begin():
+                game = Game(chat_id=chat_id, state=GameState.created)
+                session.add(game)
+                await session.flush()
+
+                # Создаём команды
+                for _ in range(2):
+                    team = Team(game_id=game.id)
+                    session.add(team)
+
+        return game
 
     async def delete_game(self, game_id: int):
         async with self.app.database.session() as session:

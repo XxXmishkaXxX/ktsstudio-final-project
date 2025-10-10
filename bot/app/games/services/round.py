@@ -34,27 +34,27 @@ class RoundService:
 
     async def handle_round(self, current_round, game_id, chat_id, message_id):
         state = current_round.state
-        if state == RoundState.faceoff:
-            await self._handle_faceoff(
-                current_round, game_id, chat_id, message_id
-            )
-        elif state == RoundState.buzzer_answer:
-            await self._handle_buzzer_answer(
-                current_round, game_id, chat_id, message_id
-            )
-        elif state == RoundState.team_play:
-            await self._handle_team_play(
-                current_round, game_id, chat_id, message_id
-            )
-        elif state == RoundState.finished:
-            await self.finish_round(current_round.id)
+        match state:
+            case RoundState.faceoff:
+                await self._handle_faceoff(
+                    current_round, game_id, chat_id, message_id
+                )
+            case RoundState.buzzer_answer:
+                await self._handle_buzzer_answer(
+                    current_round, game_id, chat_id, message_id
+                )
+            case RoundState.team_play:
+                await self._handle_team_play(
+                    current_round, game_id, chat_id, message_id
+                )
+            case RoundState.finished:
+                await self.finish_round(current_round.id)
 
-            await self.app.game_service.update_state(
-                game_id, chat_id, message_id
-            )
+                await self.app.game_service.update_state(
+                    game_id, chat_id, message_id
+                )
 
     async def _handle_faceoff(self, round_, game_id, chat_id, message_id):
-        self.app.logger.info("IN FACE OF")
         teams = await self.app.store.teams.get_game_teams(game_id)
         buzzer_ids = await self.choose_buzzers(game_id)
         buzzers = [
@@ -214,7 +214,6 @@ class RoundService:
             strikes = await self.app.cache.pool.get(
                 f"round:{round_.id}:team:{round_.current_team_id}:strikes"
             )
-            self.app.logger.info(strikes)
             if int(strikes or 0) >= 3:
                 await self.switch_team(round_)
             else:
@@ -255,13 +254,11 @@ class RoundService:
         player1 = team1.members[idx1 % max_players].user_id
         player2 = team2.members[idx2 % max_players].user_id
 
-        # сохраняем новых баззеров отдельно
         key_faceoff = f"game:{game_id}:faceoff_players"
         await self.app.cache.pool.set(
             key_faceoff, json.dumps({"p1": player1, "p2": player2})
         )
 
-        # обновляем индексы на следующий раз
         await self.app.cache.pool.set(
             key_idx,
             json.dumps(

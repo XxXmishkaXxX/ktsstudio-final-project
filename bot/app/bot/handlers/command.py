@@ -19,12 +19,13 @@ async def handle_command(
 ):
     user = await app.store.users.create_or_get_user(user_data)
 
-    if command == "/start":
-        await start_command(app, chat_id, user, chat_type)
-    elif command == "/play":
-        await play_command(app, chat_id, user, chat_type)
-    elif command == "/stop_game":
-        await stop_game_command(app, chat_id, user, chat_type)
-    elif command == "/ans":
-        answer = kwargs.get("args")
-        await answer_command(app, chat_id, chat_type, answer, user)
+    match command:
+        case "/start":
+            await start_command(app, chat_id, user, chat_type)
+        case "/play":
+            await play_command(app, chat_id, user, chat_type)
+        case "/stop_game":
+            await stop_game_command(app, chat_id, user, chat_type)
+        case "/ans":
+            answer = kwargs.get("args")
+            await answer_command(app, chat_id, chat_type, answer, user)

@@ -21,7 +21,7 @@ def join_game(game_id: int, team1_id: int, team2_id: int):
                 {
                     "text": "🚪 Присоединиться в команду 1",
                     "callback_data": json.dumps(
-                        {"t": "join", "g": game_id, "team": team1_id}
+                        {"type": "join", "game": game_id, "team": team1_id}
                     ),
                 }
             ],
@@ -29,7 +29,7 @@ def join_game(game_id: int, team1_id: int, team2_id: int):
                 {
                     "text": "🚪 Присоединиться в команду 2",
                     "callback_data": json.dumps(
-                        {"t": "join", "g": game_id, "team": team2_id}
+                        {"type": "join", "game": game_id, "team": team2_id}
                     ),
                 }
             ],
@@ -44,7 +44,7 @@ def buzzer_button(game_id: int, round_id: int) -> dict:
                 {
                     "text": "🛑",
                     "callback_data": json.dumps(
-                        {"t": "buzzer", "g": game_id, "r": round_id}
+                        {"type": "buzzer", "game": game_id, "round": round_id}
                     ),
                 }
             ],

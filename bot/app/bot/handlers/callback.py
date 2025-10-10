@@ -18,12 +18,12 @@ async def handle_callback(
     **kwargs,
 ):
     user = await app.store.users.create_or_get_user(user_data)
-
-    if callback_type == "join":
-        team = kwargs.get("team")
-        await join_game_callback(
-            app, game_id, chat_id, callback_id, message_id, user, team
-        )
-    elif callback_type == "buzzer":
-        round_id = kwargs.get("round_id")
-        await press_buzzer_callback(app, round_id, callback_id, user)
+    match callback_type:
+        case "join":
+            team = kwargs.get("team")
+            await join_game_callback(
+                app, game_id, chat_id, callback_id, message_id, user, team
+            )
+        case "buzzer":
+            round_id = kwargs.get("round_id")
+            await press_buzzer_callback(app, round_id, callback_id, user)

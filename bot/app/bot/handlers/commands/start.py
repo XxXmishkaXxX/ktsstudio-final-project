@@ -1,9 +1,10 @@
 import json
 import typing
 
+from db_core.models.users import User
+
 from app.bot.keyboards import main_menu
 from app.bot.texts import welcome_message
-from db_core.models.users import User
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

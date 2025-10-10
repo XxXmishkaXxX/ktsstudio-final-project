@@ -20,8 +20,9 @@ class Store:
 
 
 def setup_store(app: "Application"):
-    from app.store.cache.cache import Cache
     from db_core.database.db import Database
+
+    from app.store.cache.cache import Cache
 
     app.database = Database(app)
     app.on_startup.append(app.database.connect)

@@ -2,6 +2,7 @@ import functools
 import typing
 
 import aio_pika
+
 from app.rmq.rmq_callback import rmq_callback
 
 if typing.TYPE_CHECKING:

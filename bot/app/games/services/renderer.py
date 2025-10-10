@@ -77,14 +77,14 @@ class GameRenderer:
         **text_kwargs: dict,
     ):
         kb = {}
-
-        if state_r == "faceoff":
-            text = get_game_round_buzzers_text(**text_kwargs)
-            kb = buzzer_button(game_id, round_id)
-        elif state_r == "buzzer_answer":
-            text = get_game_round_buzzers_text(**text_kwargs)
-        elif state_r == "team_play":
-            text = get_game_round_teamplay_text(**text_kwargs)
+        match state_r:
+            case "faceoff":
+                text = get_game_round_buzzers_text(**text_kwargs)
+                kb = buzzer_button(game_id, round_id)
+            case "buzzer_answer":
+                text = get_game_round_buzzers_text(**text_kwargs)
+            case "team_play":
+                text = get_game_round_teamplay_text(**text_kwargs)
 
         await self.app.telegram.edit_message(
             chat_id,
