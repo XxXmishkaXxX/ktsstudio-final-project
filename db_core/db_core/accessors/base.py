@@ -1,5 +1,6 @@
 from logging import getLogger
 
+
 class BaseAccessor:
     def __init__(self, app, *args, **kwargs):
         self.app = app

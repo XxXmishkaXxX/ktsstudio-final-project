@@ -1,13 +1,14 @@
 import random
 
-from db_core.models.questions import Question, AnswerOption
-from .base import BaseAccessor
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
+
+from db_core.models.questions import AnswerOption, Question
+
+from .base import BaseAccessor
 
 
 class QuestionAccessor(BaseAccessor):
-
     async def create_question(self, data):
         async with self.app.database.session() as session:
             question = Question(text=data["text"])

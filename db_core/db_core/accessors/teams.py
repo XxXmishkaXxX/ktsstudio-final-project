@@ -1,7 +1,9 @@
-from db_core.models.teams import Team, TeamMember
-from .base import BaseAccessor
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
+
+from db_core.models.teams import Team, TeamMember
+
+from .base import BaseAccessor
 
 
 class TeamAccessor(BaseAccessor):

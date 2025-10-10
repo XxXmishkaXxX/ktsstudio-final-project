@@ -1,6 +1,5 @@
 from typing import Any
 
-from db_core.models.base import BaseModel
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -9,6 +8,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
+
+from db_core.models.base import BaseModel
 
 
 class Database:

@@ -1,10 +1,11 @@
 import enum
 from datetime import datetime
 
-from .teams import TeamMember
-from .base import BaseModel
 from sqlalchemy import BigInteger, DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import BaseModel
+from .teams import TeamMember
 
 
 class State(enum.Enum):

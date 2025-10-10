@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from .base import BaseModel
 from sqlalchemy import (
     DateTime,
     ForeignKey,
@@ -9,6 +8,8 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import BaseModel
 
 
 class Question(BaseModel):
