@@ -41,7 +41,7 @@ jobs:
         working-directory: api
         run: |
           uv venv
-          uv sync --no-extra
+          uv sync
       - name: Run tests
         working-directory: api
         run: uv run pytest
@@ -59,7 +59,7 @@ jobs:
         working-directory: webhook
         run: |
           uv venv
-          uv sync --no-extra
+          uv sync
       - name: Run tests
         working-directory: webhook
         run: uv run pytest
