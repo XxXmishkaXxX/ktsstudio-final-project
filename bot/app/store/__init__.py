@@ -6,11 +6,11 @@ if typing.TYPE_CHECKING:
 
 class Store:
     def __init__(self, app: "Application"):
-        from app.store.games.games_accessor import GameAccessor
-        from app.store.games.questions_accessor import QuestionAccessor
-        from app.store.games.rounds_accessor import RoundAccessor
-        from app.store.games.teams_accessor import TeamAccessor
-        from app.store.users.accessor import UserAccessor
+        from db_core.accessors.games import GameAccessor
+        from db_core.accessors.questions import QuestionAccessor
+        from db_core.accessors.rounds import RoundAccessor
+        from db_core.accessors.teams import TeamAccessor
+        from db_core.accessors.users import UserAccessor
 
         self.users = UserAccessor(app)
         self.games = GameAccessor(app)
@@ -21,7 +21,7 @@ class Store:
 
 def setup_store(app: "Application"):
     from app.store.cache.cache import Cache
-    from app.store.database.database import Database
+    from db_core.database.db import Database
 
     app.database = Database(app)
     app.on_startup.append(app.database.connect)

@@ -65,7 +65,9 @@ services:
       - app_network
 
   bot:
-    build: ./bot
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
     container_name: bot_game_service
     ports:
       - "8081:8081"
@@ -76,21 +78,32 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      admin_api:
+        condition: service_healthy
     volumes:
       - ./bot:/bot
+      - ./db_core:/db_core
     networks:
       - app_network
 
   admin_api:
-    build: ./api
+    build: 
+      context: .
+      dockerfile: api/Dockerfile
     container_name: admin_api_service
     ports:
       - "8082:8082"
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./api:/api
+      - ./db_core:/db_core
     networks:
       - app_network
 

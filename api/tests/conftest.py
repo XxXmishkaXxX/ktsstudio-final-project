@@ -3,7 +3,7 @@ import os
 
 import pytest
 from aiohttp.test_utils import TestClient
-from app.store.database.database import Database
+from db_core.database.db import Database
 from app.web.app import setup_app
 
 

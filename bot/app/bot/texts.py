@@ -1,6 +1,6 @@
 from html import escape
 
-from app.games.models.teams import Team
+from db_core.models.teams import Team
 
 
 def welcome_message(username: str) -> str:

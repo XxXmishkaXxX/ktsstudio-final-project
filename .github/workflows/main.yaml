@@ -1,5 +1,6 @@
-name: Check homework
+name: Check dev
 on: [push]
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -34,14 +35,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Install dependencies
+      - name: Install UV
+        run: curl -fsSL https://astral.sh/uv/install.sh | sh
+      - name: Setup UV environment
         working-directory: api
         run: |
-          pip install -r requirements.txt
+          uv venv
+          uv sync
       - name: Run tests
         working-directory: api
-        run: |
-          pytest
+        run: uv run pytest
 
   test_webhook:
     runs-on: ubuntu-latest
@@ -50,11 +53,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Install dependencies
+      - name: Install UV
+        run: curl -fsSL https://astral.sh/uv/install.sh | sh
+      - name: Setup UV environment
         working-directory: webhook
         run: |
-          pip install -r requirements.txt
+          uv venv
+          uv sync
       - name: Run tests
         working-directory: webhook
-        run: |
-          pytest
+        run: uv run pytest
