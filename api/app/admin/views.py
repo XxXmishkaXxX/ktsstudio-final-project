@@ -12,14 +12,12 @@ class AdminLoginView(View):
     @request_schema(AdminSchema)
     @response_schema(AdminSchema, 200)
     async def post(self):
-        email = self.data.get("email")
-        password = self.data.get("password")
 
         admin_accessor: AdminAccessor = self.store.admins
-        admin = await admin_accessor.get_by_email(email)
+        admin = await admin_accessor.get_by_email(self.data["email"])
 
         if not admin or not await admin_accessor.verify_password(
-            password, admin.password
+            self.data["password"], admin.password
         ):
             return error_json_response(
                 http_status=403,
