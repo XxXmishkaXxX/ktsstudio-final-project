@@ -1,10 +1,11 @@
-from .base import BaseAccessor
-from db_core.models.users import State, User
 from sqlalchemy import select
+
+from db_core.models.users import State, User
+
+from .base import BaseAccessor
 
 
 class UserAccessor(BaseAccessor):
-
     async def create_or_get_user(self, user_data: dict) -> User:
         tg_id = user_data["id"]
         username = user_data["username"]

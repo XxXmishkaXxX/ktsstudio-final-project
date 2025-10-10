@@ -1,7 +1,9 @@
+from sqlalchemy import and_, select, update
+
 from db_core.models.games import Game, GameState
 from db_core.models.teams import Team
+
 from .base import BaseAccessor
-from sqlalchemy import and_, select, update
 
 
 class GameAccessor(BaseAccessor):

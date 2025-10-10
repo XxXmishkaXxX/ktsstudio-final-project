@@ -1,13 +1,15 @@
 import random
 
+from sqlalchemy import func, select, update
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
+
 from db_core.models.games import Game
 from db_core.models.questions import Question
 from db_core.models.rounds import Round, RoundAnswer, RoundState
 from db_core.models.teams import Team, TeamMember
+
 from .base import BaseAccessor
-from sqlalchemy import func, select, update
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
 
 
 class RoundAccessor(BaseAccessor):

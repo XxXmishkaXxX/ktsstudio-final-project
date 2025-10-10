@@ -1,7 +1,5 @@
 import enum
 
-from .questions import AnswerOption, Question  # noqa: F401
-from .base import BaseModel
 from sqlalchemy import (
     JSON,
     BigInteger,
@@ -10,6 +8,9 @@ from sqlalchemy import (
     Integer,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import BaseModel
+from .questions import AnswerOption, Question  # noqa: F401
 
 
 class RoundState(enum.Enum):

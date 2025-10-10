@@ -1,9 +1,9 @@
-from typing import TYPE_CHECKING
+from passlib.hash import pbkdf2_sha256
+from sqlalchemy import select
+
+from db_core.models.admins import AdminModel
 
 from .base import BaseAccessor
-from passlib.hash import pbkdf2_sha256
-from db_core.models.admins import AdminModel
-from sqlalchemy import select
 
 
 class AdminAccessor(BaseAccessor):
