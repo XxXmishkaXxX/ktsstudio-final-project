@@ -14,34 +14,35 @@ from .base import BaseAccessor
 class RoundAccessor(BaseAccessor):
     async def create_round(self, game_id: int, round_number: int) -> Round:
         async with self.app.database.session() as session:
-            questions = (
-                (
-                    await session.execute(
-                        select(Question).options(selectinload(Question.answers))
+            async with session.begin():
+                questions = (
+                    (
+                        await session.execute(
+                            select(Question).options(
+                                selectinload(Question.answers)
+                            )
+                        )
                     )
+                    .scalars()
+                    .all()
                 )
-                .scalars()
-                .all()
-            )
 
-            if not questions:
-                raise ValueError("Нет доступных вопросов")
+                if not questions:
+                    raise ValueError("Нет доступных вопросов")
 
-            question = random.choice(questions)
+                question = random.choice(questions)
 
-            round_obj = Round(
-                game_id=game_id,
-                round_number=round_number,
-                question_id=question.id,
-            )
-            session.add(round_obj)
-            await session.commit()
+                round_obj = Round(
+                    game_id=game_id,
+                    round_number=round_number,
+                    question_id=question.id,
+                )
+                session.add(round_obj)
+
+                game = await session.get(Game, game_id)
+                game.current_round_id = round_obj.id
+
             await session.refresh(round_obj)
-
-            game = await session.get(Game, game_id)
-            game.current_round_id = round_obj.id
-            await session.commit()
-
             round_obj.question = question
             return round_obj
 

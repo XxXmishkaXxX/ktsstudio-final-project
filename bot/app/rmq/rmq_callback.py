@@ -16,8 +16,8 @@ if typing.TYPE_CHECKING:
 
 async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
     """Главная точка обработки сообщений из RabbitMQ."""
-    async with message.process():
-        try:
+    try:
+        async with message.process():
             payload = parse_json_body(message)
 
             if "callback_query" in payload:
@@ -45,6 +45,5 @@ async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
                         msg_data["chat_type"],
                         args=msg_data["args"],
                     )
-
-        except Exception:
-            app.logger.exception("⚠️ Failed to handle message:")
+    except Exception:
+        app.logger.exception("⚠️ Failed to handle message:")

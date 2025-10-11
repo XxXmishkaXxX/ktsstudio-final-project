@@ -23,7 +23,9 @@ dependencies = [
     "ruff==0.7.3",
     "typing_extensions==4.15.0",
     "yarl==1.20.1",
-    "db-core"
+    "db-core",
+    "pytest>=8.4.2",
+    "pytest-aiohttp>=1.1.0",
 ]
 
 [tool.uv.sources]
