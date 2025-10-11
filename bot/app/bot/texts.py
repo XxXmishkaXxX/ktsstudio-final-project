@@ -70,11 +70,8 @@ def get_game_round_buzzers_text(
     ]
     if opened_answers:
         for ans in opened_answers:
-            table[ans.answer_option.position - 1] = (
-                f"{ans.answer_option.position}."
-                f"{ans.answer_option.text}"
-                f"{ans.answer_option.points}"
-            )
+            pos = ans["position"] - 1
+            table[pos] = f"{ans['position']}. {ans['text']} {ans['points']}"
 
     text_lines.append("\n".join(table) + "\n")
     if player:

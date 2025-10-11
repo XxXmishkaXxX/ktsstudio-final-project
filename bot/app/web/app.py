@@ -5,15 +5,15 @@ from aiohttp.web import (
 from db_core.database.db import Database
 
 from app.bot.client import TelegramBot, setup_telegram_client
-from app.games.services.setup import (
+from app.recovery.setup import HeartbeatService, RecoveryService, setup_recovery
+from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
+from app.services.setup import (
     GameRenderer,
     GameService,
     RoundService,
     TimerService,
     setup_services,
 )
-from app.recovery.setup import HeartbeatService, RecoveryService, setup_recovery
-from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
 from app.store import Store, setup_store
 from app.store.cache.cache import Cache
 from app.web.config import Config, setup_config

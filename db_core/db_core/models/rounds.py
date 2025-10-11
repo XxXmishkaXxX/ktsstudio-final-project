@@ -6,6 +6,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Integer,
+    UniqueConstraint
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -79,6 +80,9 @@ class Round(BaseModel):
 
 class RoundAnswer(BaseModel):
     __tablename__ = "round_answers"
+    __table_args__ = (
+        UniqueConstraint('round_id', 'answer_option_id', name='uq_round_answer'),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     round_id: Mapped[int] = mapped_column(

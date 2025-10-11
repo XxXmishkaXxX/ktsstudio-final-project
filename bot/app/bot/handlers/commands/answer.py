@@ -3,8 +3,6 @@ import typing
 from db_core.models.rounds import RoundState
 from db_core.models.users import User
 
-from app.games.services.round import RoundService
-
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
@@ -30,14 +28,14 @@ async def answer_command(
     if not game:
         return
 
-    service: RoundService = RoundService(app)
-
     game_id = game.id
     state = await app.store.rounds.get_round_state(game.current_round_id)
 
     if state == RoundState.buzzer_answer:
-        await service.buzzer_answer_question(game_id, user.id, answer)
+        await app.round_service.buzzer_answer_question(game_id, user.id, answer)
 
     elif state == RoundState.team_play:
-        await service.team_answer_question(game_id, chat_id, user.id, answer)
+        await app.round_service.team_answer_question(
+            game_id, chat_id, user.id, answer
+        )
     return
