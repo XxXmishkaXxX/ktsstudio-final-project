@@ -1,5 +1,6 @@
 import typing
 from abc import ABC, abstractmethod
+
 from db_core.models.rounds import Round
 
 if typing.TYPE_CHECKING:

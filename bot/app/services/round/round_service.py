@@ -6,9 +6,10 @@ if typing.TYPE_CHECKING:
 
 from db_core.models.games import GameState
 from db_core.models.rounds import Round, RoundState
-from app.games.services.round.handlers.faceoff import FaceoffHandler
-from app.games.services.round.handlers.buzzer_answer import BuzzerAnswerHandler
-from app.games.services.round.handlers.teamplay import TeamPlayHandler
+
+from app.services.round.handlers.buzzer_answer import BuzzerAnswerHandler
+from app.services.round.handlers.faceoff import FaceoffHandler
+from app.services.round.handlers.teamplay import TeamPlayHandler
 
 HANDLERS = {
     RoundState.faceoff: FaceoffHandler,
@@ -56,7 +57,8 @@ class RoundService:
         handler_cls = HANDLERS.get(current_round.state)
         if handler_cls is None:
             self.app.logger.warning(
-                f"⚠️ No handler found for round state {current_round.state}"
+                "⚠️ No handler found for round state: %s", 
+                current_round.state.value
             )
             return
 
@@ -172,13 +174,13 @@ class RoundService:
             return {"found": False, "reason": "already_opened"}
 
         opened_answers = await self.app.store.rounds.get_opened_answers(
-                round_.id
-            )
+            round_.id
+        )
 
         await self.app.cache.pool.set(
-                f"round:{round_.id}:opened_answers",
-                json.dumps(opened_answers),
-            )
+            f"round:{round_.id}:opened_answers",
+            json.dumps(opened_answers),
+        )
 
         all_opened = len(opened_answers) == total_answers
 
@@ -362,7 +364,9 @@ class RoundService:
             await self.app.store.teams.add_team_score(
                 round_.current_team.id, final_score
             )
-            await self.app.store.rounds.set_round_state(round_.id, RoundState.finished)
+            await self.app.store.rounds.set_round_state(
+                round_.id, RoundState.finished
+            )
             await self.app.cache.pool.delete(
                 f"round:{round_.id}:{round_.state.value}_timer"
             )

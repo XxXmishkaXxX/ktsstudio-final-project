@@ -1,6 +1,8 @@
-from .base import BaseRoundHandler
 import typing
+
 from db_core.models.rounds import Round, RoundState
+
+from .base import BaseRoundHandler
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

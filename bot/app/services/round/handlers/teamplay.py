@@ -1,7 +1,9 @@
 import json
-from .base import BaseRoundHandler
 import typing
+
 from db_core.models.rounds import Round, RoundState
+
+from .base import BaseRoundHandler
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -25,7 +27,6 @@ class TeamPlayHandler(BaseRoundHandler):
             f"round:{self.round_.id}:opened_answers"
         )
         opened_ans = json.loads(opened_ans_json) if opened_ans_json else []
-
 
         count_strikes = await self.app.cache.pool.get(
             f"round:{self.round_.id}:team:{self.round_.current_team_id}:strikes",

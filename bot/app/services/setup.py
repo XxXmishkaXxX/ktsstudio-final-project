@@ -1,7 +1,7 @@
-from app.games.services.game import GameService
-from app.games.services.renderer import GameRenderer
-from app.games.services.round.round_service import RoundService
-from app.games.services.timer import TimerService
+from app.services.game import GameService
+from app.services.renderer import GameRenderer
+from app.services.round.round_service import RoundService
+from app.services.timer import TimerService
 
 
 def setup_services(app):
