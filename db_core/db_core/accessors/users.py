@@ -24,7 +24,9 @@ class UserAccessor(BaseAccessor):
 
     async def set_state_user(self, tg_id: int, state: str):
         async with self.app.database.session() as session:
-            user = (await session.execute(select(User).where(User.id == tg_id))).scalar_one_or_none()
+            user = (
+                await session.execute(select(User).where(User.id == tg_id))
+            ).scalar_one_or_none()
             if not user:
                 return
 

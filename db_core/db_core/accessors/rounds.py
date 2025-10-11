@@ -1,7 +1,6 @@
 import random
 
 from sqlalchemy import func, select, update
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
 from db_core.models.games import Game
@@ -133,12 +132,14 @@ class RoundAccessor(BaseAccessor):
             await session.refresh(updated_round)
             return updated_round
 
-    async def add_opened_answer_if_not_exists(self, round_id: int, answer_id: int) -> bool:
+    async def add_opened_answer_if_not_exists(
+        self, round_id: int, answer_id: int
+    ) -> bool:
         async with self.app.database.session() as session:
             existing = await session.execute(
                 select(RoundAnswer).where(
                     RoundAnswer.round_id == round_id,
-                    RoundAnswer.answer_option_id == answer_id
+                    RoundAnswer.answer_option_id == answer_id,
                 )
             )
             if existing.scalar_one_or_none():
@@ -160,7 +161,7 @@ class RoundAccessor(BaseAccessor):
                 .where(RoundAnswer.round_id == round_id)
             )
 
-            opened_ans_data = [
+            return [
                 {
                     "position": ans.answer_option.position,
                     "text": ans.answer_option.text,
@@ -168,8 +169,6 @@ class RoundAccessor(BaseAccessor):
                 }
                 for ans in q.scalars().all()
             ]
-            return opened_ans_data
-
 
     async def count_opened_answers(self, round_id: int) -> int:
         async with self.app.database.session() as session:
@@ -200,8 +199,7 @@ class RoundAccessor(BaseAccessor):
             result = await session.execute(update_stmt)
             await session.commit()
 
-            updated_score = result.scalar_one()
-            return updated_score
+            return result.scalar_one()
 
     async def get_score(self, round_id: int):
         async with self.app.database.session() as session:

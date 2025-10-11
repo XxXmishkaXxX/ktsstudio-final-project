@@ -12,7 +12,6 @@ class AdminLoginView(View):
     @request_schema(AdminSchema)
     @response_schema(AdminSchema, 200)
     async def post(self):
-
         admin_accessor: AdminAccessor = self.store.admins
         admin = await admin_accessor.get_by_email(self.data["email"])
 
