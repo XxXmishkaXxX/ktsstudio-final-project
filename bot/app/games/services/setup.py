@@ -1,6 +1,6 @@
 from app.games.services.game import GameService
 from app.games.services.renderer import GameRenderer
-from app.games.services.round import RoundService
+from app.games.services.round.round_service import RoundService
 from app.games.services.timer import TimerService
 
 
