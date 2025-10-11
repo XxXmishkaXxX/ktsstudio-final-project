@@ -116,8 +116,6 @@ class RoundAccessor(BaseAccessor):
                 raise Exception("Кто-то уже нажал кнопку")
 
             await session.commit()
-            await session.refresh(updated_round)
-            return updated_round
 
     async def overwrite_buzzer(self, round_id: int, user_id: int) -> Round:
         async with self.app.database.session() as session:
@@ -135,31 +133,43 @@ class RoundAccessor(BaseAccessor):
             await session.refresh(updated_round)
             return updated_round
 
-    async def add_opened_answer_if_not_exists(
-        self, round_id: int, answer_id: int
-    ) -> bool:
+    async def add_opened_answer_if_not_exists(self, round_id: int, answer_id: int) -> bool:
         async with self.app.database.session() as session:
+            existing = await session.execute(
+                select(RoundAnswer).where(
+                    RoundAnswer.round_id == round_id,
+                    RoundAnswer.answer_option_id == answer_id
+                )
+            )
+            if existing.scalar_one_or_none():
+                return False
+
             round_answer = RoundAnswer(
                 round_id=round_id,
                 answer_option_id=answer_id,
             )
             session.add(round_answer)
-            try:
-                await session.commit()
-            except IntegrityError:
-                await session.rollback()
-                return False
-            else:
-                return True
+            await session.commit()
+            return True
 
-    async def get_opened_answers(self, round_id: int) -> list[RoundAnswer]:
+    async def get_opened_answers(self, round_id: int) -> list[dict]:
         async with self.app.database.session() as session:
             q = await session.execute(
                 select(RoundAnswer)
                 .options(selectinload(RoundAnswer.answer_option))
                 .where(RoundAnswer.round_id == round_id)
             )
-            return q.scalars().all()
+
+            opened_ans_data = [
+                {
+                    "position": ans.answer_option.position,
+                    "text": ans.answer_option.text,
+                    "points": ans.answer_option.points,
+                }
+                for ans in q.scalars().all()
+            ]
+            return opened_ans_data
+
 
     async def count_opened_answers(self, round_id: int) -> int:
         async with self.app.database.session() as session:
@@ -181,12 +191,17 @@ class RoundAccessor(BaseAccessor):
             if not round_:
                 raise ValueError("Раунд не найден")
 
-            await session.execute(
+            update_stmt = (
                 update(Round)
                 .where(Round.id == round_id)
                 .values(revealed_count=Round.revealed_count + score)
+                .returning(Round.revealed_count)
             )
+            result = await session.execute(update_stmt)
             await session.commit()
+
+            updated_score = result.scalar_one()
+            return updated_score
 
     async def get_score(self, round_id: int):
         async with self.app.database.session() as session:
