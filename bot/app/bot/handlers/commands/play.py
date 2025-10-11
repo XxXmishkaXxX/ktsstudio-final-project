@@ -24,14 +24,16 @@ async def play_command(
 
     game = await app.store.games.is_active_game_in_chat(chat_id)
 
-    app.logger.info(game)
-
     if user.state == State.idle and not game:
         await app.telegram.send_message(
             chat_id,
             f"🎮 Пользователь @{user.username} запустил игру!",
         )
         await app.game_service.create_game(chat_id, user.id)
+        return
+
+    if user.state != State.idle and not game:
+        await app.telegram.send_message(chat_id, "Вы участвуете в другой игре.")
         return
 
     await app.telegram.send_message(chat_id, "В чате уже идет игра, подождите.")

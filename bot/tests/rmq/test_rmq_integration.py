@@ -1,6 +1,7 @@
-import pytest
 import asyncio
+
 import aio_pika
+import pytest
 from aio_pika.exceptions import ChannelInvalidStateError
 
 
@@ -8,17 +9,18 @@ from aio_pika.exceptions import ChannelInvalidStateError
 async def test_rabbitmq_connect(rmq, config):
     await rmq.connect()
     assert rmq.queue is not None
-    assert rmq.queue.name == rmq.queue_name or rmq.queue.name == config.rmq.queue
+    assert (
+        rmq.queue.name == rmq.queue_name or rmq.queue.name == config.rmq.queue
+    )
 
 
 async def test_rabbitmq_consume(rmq):
-
     await rmq.connect()
 
     called = asyncio.Event()
     received_body = {}
 
-    async def callback(message: aio_pika.IncomingMessage, app):
+    def callback(message: aio_pika.IncomingMessage, app):
         received_body["data"] = message.body.decode()
         called.set()
 
@@ -38,8 +40,6 @@ async def test_rabbitmq_consume(rmq):
 
 @pytest.mark.asyncio
 async def test_rabbitmq_close_really_closes_connection(rmq):
-    """Интеграционный тест: rmq.close() закрывает соединение и делает канал недоступным"""
-
     await rmq.connect()
     assert not rmq._connection.is_closed
     assert not rmq._channel.is_closed

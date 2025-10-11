@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from app.bot.handlers.callback import handle_callback
 from app.bot.handlers.command import handle_command
@@ -7,10 +8,10 @@ from app.bot.handlers.command import handle_command
 
 @pytest.mark.asyncio
 @patch("app.bot.handlers.callback.join_game_callback", new_callable=AsyncMock)
-@patch("app.bot.handlers.callback.press_buzzer_callback", new_callable=AsyncMock)
-async def test_handle_callback_invokes_join_and_buzzer(
-    mock_buzzer, mock_join
-):
+@patch(
+    "app.bot.handlers.callback.press_buzzer_callback", new_callable=AsyncMock
+)
+async def test_handle_callback_invokes_join_and_buzzer(mock_buzzer, mock_join):
     app = AsyncMock()
     app.store.users.create_or_get_user = AsyncMock(return_value={"id": 1})
 

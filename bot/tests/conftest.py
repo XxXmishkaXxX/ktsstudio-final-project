@@ -3,11 +3,12 @@ import os
 
 import pytest
 from db_core.database.db import Database
+
 from app.rmq.rabbitmq import RabbitMQ
 from app.store.cache.cache import Cache
-from unittest.mock import AsyncMock, MagicMock
-
 from app.web.app import setup_app
+
+from .fixtures import *  # noqa: F403
 
 
 @pytest.fixture(scope="session")
@@ -28,17 +29,19 @@ async def application():
 
     app.cache = Cache(app)
     await app.cache.connect()
-    
+
     await app.database.connect()
     async with app.database.engine.begin() as conn:
         await conn.run_sync(app.database._db.metadata.create_all)
 
-    app.rmq = RabbitMQ(app,
-                       host=app.config.rmq.host,
-                       port=app.config.rmq.port,
-                       user=app.config.rmq.user,
-                       password=app.config.rmq.password,
-                       queue=app.config.rmq.queue)
+    app.rmq = RabbitMQ(
+        app,
+        host=app.config.rmq.host,
+        port=app.config.rmq.port,
+        user=app.config.rmq.user,
+        password=app.config.rmq.password,
+        queue=app.config.rmq.queue,
+    )
     await app.rmq.connect()
 
     yield app
@@ -46,9 +49,10 @@ async def application():
     async with app.database.engine.begin() as conn:
         await conn.run_sync(app.database._db.metadata.drop_all)
 
-    await app.cache.pool.flushdb() 
+    await app.cache.pool.flushdb()
     await app.database.disconnect()
     await app.rmq.close()
+
 
 @pytest.fixture
 def store(application):
