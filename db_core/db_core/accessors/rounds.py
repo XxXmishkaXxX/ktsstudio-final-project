@@ -16,9 +16,13 @@ class RoundAccessor(BaseAccessor):
         async with self.app.database.session() as session:
             async with session.begin():
                 questions = (
-                    (await session.execute(
-                        select(Question).options(selectinload(Question.answers))
-                    ))
+                    (
+                        await session.execute(
+                            select(Question).options(
+                                selectinload(Question.answers)
+                            )
+                        )
+                    )
                     .scalars()
                     .all()
                 )
