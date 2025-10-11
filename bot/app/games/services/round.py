@@ -6,6 +6,7 @@ if typing.TYPE_CHECKING:
     from app.web.app import Application
 
 from db_core.models.rounds import Round, RoundState
+from db_core.models.games import GameState
 
 
 class RoundService:
@@ -33,6 +34,10 @@ class RoundService:
         return None
 
     async def handle_round(self, current_round, game_id, chat_id, message_id):
+        game_state = await self.app.store.games.get_game_state(game_id)
+        if game_state == GameState.finished:
+            return
+
         state = current_round.state
         match state:
             case RoundState.faceoff:
@@ -314,6 +319,7 @@ class RoundService:
             cursor, keys = await redis.scan(
                 cursor=cursor, match=keys_pattern, count=100
             )
+            self.app.logger.info(keys)
             if keys:
                 await redis.delete(*keys)
             if cursor == 0:
