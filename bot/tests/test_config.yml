@@ -1,0 +1,24 @@
+bot:
+  token: "8425361906:AAGf6OIP-owwcb-erbhg2bjEo6i_redg2Ao"
+  username: "jsdcjsdmidewombot"
+
+server:
+  host: "0.0.0.0"
+  port: 8081
+
+rabbitmq:
+  host: "localhost"
+  port: 5673
+  user: "guest"
+  password: "guest"
+  queue: "bot_events"
+
+redis:
+  url: "redis://localhost:6379/1"
+
+database:
+  host: localhost
+  port: 5433
+  user: postgres
+  password: postgres_pass
+  database: db_game_test
