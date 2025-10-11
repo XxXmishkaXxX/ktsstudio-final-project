@@ -57,8 +57,8 @@ class RoundService:
         handler_cls = HANDLERS.get(current_round.state)
         if handler_cls is None:
             self.app.logger.warning(
-                "⚠️ No handler found for round state: %s", 
-                current_round.state.value
+                "⚠️ No handler found for round state: %s",
+                current_round.state.value,
             )
             return
 
