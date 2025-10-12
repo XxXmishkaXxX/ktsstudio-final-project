@@ -23,41 +23,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Check changed folders
-        id: changes
-        run: |
-          CHANGED_WEBHOOK=false
-          CHANGED_BOT=false
-          CHANGED_API=false
-
-          if git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 | grep -q '^webhook/'; then
-            CHANGED_WEBHOOK=true
-          fi
-          if git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 | grep -q '^bot/'; then
-            CHANGED_BOT=true
-          fi
-          if git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 | grep -q '^api/'; then
-            CHANGED_API=true
-          fi
-
-          echo "webhook=$CHANGED_WEBHOOK" >> $GITHUB_OUTPUT
-          echo "bot=$CHANGED_BOT" >> $GITHUB_OUTPUT
-          echo "api=$CHANGED_API" >> $GITHUB_OUTPUT
-
       - name: Build and push webhook
-        if: steps.changes.outputs.webhook == 'true'
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook ./webhook
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook
 
       - name: Build and push bot
-        if: steps.changes.outputs.bot == 'true'
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot ./bot
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot
 
       - name: Build and push api
-        if: steps.changes.outputs.api == 'true'
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api ./api
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api
