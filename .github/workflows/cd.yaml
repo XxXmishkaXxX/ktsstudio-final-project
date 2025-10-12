@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,21 +25,39 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push webhook
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook ./webhook
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook
+        uses: docker/build-push-action@v6
+        with:
+          context: ./webhook
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook-latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook-${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook-cache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook-cache,mode=max
 
       - name: Build and push bot
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot \
-          -f ./bot/Dockerfile
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./bot/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot-latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot-${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot-cache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot-cache,mode=max
 
       - name: Build and push api
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api \
-          -f ./api/Dockerfile
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api-latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api-${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api-cache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api-cache,mode=max
 
       - name: Deploy on remote server
         uses: appleboy/ssh-action@v0.1.8
