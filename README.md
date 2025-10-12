@@ -39,7 +39,7 @@
 ### 1. Клонирование репозитория
 
 ```bash
-git clone -b dev https://github.com/XxXmishkaXxX/ktsstudio-final-project.git
+git clone https://github.com/XxXmishkaXxX/ktsstudio-final-project.git
 cd ktsstudio-final-project
 ```
 ### 2. Настройка конфигураций
@@ -78,6 +78,7 @@ docker-compose up --build
 | `/start`      | Запустить бота и получить приветственное сообщение |
 | `/play`       | Начать игру "100 к 1" |
 | `/stop_game`  | Остановить текущую игру |
+| `/ans` | Ответить во время игры | 
 
 
 ## API
@@ -87,8 +88,8 @@ docker-compose up --build
 ### Эндпоинты
 | Метод  | URL           | Описание |
 |--------|---------------|----------|
-| `POST` | `/admin/login` | Логин администратора. Принимает JSON с полями `email` и `password` (`AdminSchema`). Возвращает данные админа и создаёт сессию. |
-| `GET`  | `/admin/current` | Получить данные текущего администратора (только для залогиненных админов). |
+| `POST` | `/admin.login` | Логин администратора. Принимает JSON с полями `email` и `password` (`AdminSchema`). Возвращает данные админа и создаёт сессию. |
+| `GET`  | `/admin.current` | Получить данные текущего администратора (только для залогиненных админов). |
 | `POST` | `/questions`       | Создать новый вопрос. Принимает JSON с полями вопроса (`QuestionSchema`). |
 | `GET`  | `/questions/?page=1&limit=10` | Получить список вопросов с пагинацией. Возвращает объект с `page`, `limit`, `total` и `items`. |
 | `DELETE` | `/questions`     | Удалить вопрос по `id`. Принимает JSON с полем `id` (`QuestionDeleteSchema`). |
@@ -96,7 +97,7 @@ docker-compose up --build
 ### Логин администратора:
 
 ```bash
-curl -X POST http://localhost:8000/admin/login \
+curl -X POST http://localhost:8082/admin.login \
 -H "Content-Type: application/json" \
 -d '{
   "email": "admin@example.com",
@@ -120,14 +121,14 @@ curl -X POST http://localhost:8082/questions \
 ```
 ### Удаление вопроса:
 ```bash
-curl -X DELETE http://localhost:8000/questions/ \
+curl -X DELETE http://localhost:8082/questions/ \
 -H "Content-Type: application/json" \
 -d '{"id": 1}'
 ```
 
 ### Получение вопросов (GET):
 ```bash
-curl http://localhost:8000/questions/?page=1&limit=10
+curl http://localhost:8082/questions/?page=1&limit=10
 ```
 
 ## Благодарности
