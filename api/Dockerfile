@@ -26,5 +26,5 @@ ENV PYTHONUNBUFFERED=1 \
 
 EXPOSE 8082
 
-CMD uv run alembic -c api/alembic.ini upgrade head && uv run python api/main.py
+CMD uv run alembic upgrade head && uv run python main.py
 

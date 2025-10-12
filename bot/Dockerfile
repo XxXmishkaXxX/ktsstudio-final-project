@@ -26,5 +26,5 @@ ENV PYTHONUNBUFFERED=1 \
 
 EXPOSE 8081
 
-CMD ["uv", "run", "python", "bot/main.py"]
+CMD ["uv", "run", "python", "main.py"]
 
