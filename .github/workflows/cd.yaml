@@ -31,15 +31,13 @@ jobs:
       - name: Build and push bot
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot \
-          -f ./bot/Dockerfile \
-          ./ 
+          -f ./bot/Dockerfile
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:bot
 
       - name: Build and push api
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api \
-          -f ./api/Dockerfile \
-          ./ 
+          -f ./api/Dockerfile
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:api
 
       - name: Deploy on remote server
