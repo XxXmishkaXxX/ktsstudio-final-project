@@ -1,0 +1,125 @@
+services:
+  nginx:
+    image: nginx:stable
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - admin_api
+      - webhook
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/html:/usr/share/nginx/html
+    networks:
+      - app_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_DB: db_game
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  webhook:
+    image: vojda172/100k1-game-bot:webhook
+    container_name: webhook_service
+    ports:
+      - "8080:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app_network
+    volumes:
+      - ./configs/webhook_config.yml:/webhook/config.yml:ro
+
+  bot:
+    image: vojda172/100k1-game-bot:bot
+    container_name: bot_game_service
+    ports:
+      - "8081:8081"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      admin_api:
+        condition: service_healthy
+    networks:
+      - app_network
+    volumes:
+      - ./configs/bot_config.yml:/bot/config.yml:ro
+
+  admin_api:
+    image: vojda172/100k1-game-bot:api
+    container_name: admin_api_service
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+    volumes:
+      - ./configs/api_config.yml:/api/config.yml:ro
+
+volumes:
+  rabbitmq_data: {}
+  postgres_data: {}
+  redis_data: {}
+
+networks:
+  app_network:
+    driver: bridge
