@@ -1,4 +1,3 @@
-import asyncio
 import typing
 
 if typing.TYPE_CHECKING:
@@ -132,15 +131,13 @@ class GameService:
         await self.app.heartbeat.start(game_id)
 
         teams = await self.app.store.teams.get_game_teams(game_id)
-        team_1 = [m.user.username or str(m.user_id) for m in teams[0].members]
-        team_2 = [m.user.username or str(m.user_id) for m in teams[1].members]
 
         async def on_tick(sec: int):
             await self.app.renderer.render_starting(
+                game_id,
                 chat_id,
                 message_id,
-                team_1=team_1,
-                team_2=team_2,
+                teams=teams,
                 sec=sec,
             )
 
@@ -167,15 +164,13 @@ class GameService:
                 game_id, chat_id, message_id, teams
             )
 
-        _ = asyncio.create_task(  # noqa: RUF006
-            self.app.timer_service.start_timer(
-                redis_key,
-                lock_key,
-                sec=5,
-                on_tick=on_tick,
-                on_finish=on_finish,
-                on_interrupt=on_interrupt,
-            )
+        await self.app.timer_service.start_timer(
+            redis_key,
+            lock_key,
+            sec=5,
+            on_tick=on_tick,
+            on_finish=on_finish,
+            on_interrupt=on_interrupt,
         )
 
     async def _handle_in_progress(self, game_id, chat_id, message_id):
