@@ -21,7 +21,12 @@ def join_game(game_id: int, team1_id: int, team2_id: int):
                 {
                     "text": "🚪 Присоединиться в команду 1",
                     "callback_data": json.dumps(
-                        {"type": "join", "game": game_id, "team": team1_id}
+                        {
+                            "type": "join",
+                            "game": game_id,
+                            "team": team1_id,
+                            "t_num": 1,
+                        }
                     ),
                 }
             ],
@@ -29,10 +34,30 @@ def join_game(game_id: int, team1_id: int, team2_id: int):
                 {
                     "text": "🚪 Присоединиться в команду 2",
                     "callback_data": json.dumps(
-                        {"type": "join", "game": game_id, "team": team2_id}
+                        {
+                            "type": "join",
+                            "game": game_id,
+                            "team": team2_id,
+                            "t_num": 2,
+                        }
                     ),
                 }
             ],
+        ]
+    }
+
+
+def leave_game(game_id: int):
+    return {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "Выйти из игры",
+                    "callback_data": json.dumps(
+                        {"type": "leave", "game": game_id}
+                    ),
+                }
+            ]
         ]
     }
 
