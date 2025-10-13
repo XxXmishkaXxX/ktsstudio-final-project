@@ -17,6 +17,23 @@ class GameRenderer:
     def __init__(self, app: "Application"):
         self.app = app
 
+    def _get_members(self, team):
+        return [m.user.username or str(m.user_id) for m in team.members]
+
+    def _build_join_leave_kb(self, game_id: int, team1, team2):
+        has_players = bool(team1.members or team2.members)
+        kb = {"inline_keyboard": []}
+        jg = join_game(game_id, team1.id, team2.id)
+
+        if len(team1.members) < 5:
+            kb["inline_keyboard"].append(jg["inline_keyboard"][0])
+        if len(team2.members) < 5:
+            kb["inline_keyboard"].append(jg["inline_keyboard"][1])
+        if has_players:
+            kb["inline_keyboard"].extend(leave_game(game_id)["inline_keyboard"])
+
+        return kb
+
     async def render_created(
         self, game_id: int, chat_id: int, teams, message_id: int | None = None
     ):
@@ -24,26 +41,11 @@ class GameRenderer:
             raise Exception("Недостаточно команд для отображения игры")
 
         team1, team2 = teams[0], teams[1]
+        members_team1 = self._get_members(team1)
+        members_team2 = self._get_members(team2)
 
-        members_team1 = [
-            m.user.username or str(m.user_id) for m in team1.members
-        ]
-        members_team2 = [
-            m.user.username or str(m.user_id) for m in team2.members
-        ]
-
-        text = get_game_created_text(
-            team_1=members_team1,
-            team_2=members_team2,
-        )
-
-        has_players = bool(team1.members or team2.members)
-
-        kb = join_game(game_id, team1.id, team2.id)
-
-        if has_players:
-            leave_kb = leave_game(game_id)
-            kb["inline_keyboard"].extend(leave_kb["inline_keyboard"])
+        text = get_game_created_text(team_1=members_team1, team_2=members_team2)
+        kb = self._build_join_leave_kb(game_id, team1, team2)
 
         if message_id:
             await self.app.telegram.edit_message(
@@ -63,19 +65,29 @@ class GameRenderer:
 
     async def render_starting(
         self,
+        game_id: int,
         chat_id: int,
         message_id: int,
-        team_1: list[str],
-        team_2: list[str],
+        teams,
         sec: int,
     ):
+        team1, team2 = teams[0], teams[1]
+        members_team1 = self._get_members(team1)
+        members_team2 = self._get_members(team2)
+
         text = get_game_created_text(
-            team_1=team_1,
-            team_2=team_2,
+            team_1=members_team1,
+            team_2=members_team2,
             extra=f"Игра начнется через {sec} сек.",
         )
+        kb = self._build_join_leave_kb(game_id, team1, team2)
+
         await self.app.telegram.edit_message(
-            chat_id, message_id, text, parse_mode="HTML"
+            chat_id,
+            message_id,
+            text,
+            reply_markup=json.dumps(kb),
+            parse_mode="HTML",
         )
 
     async def render_in_progress(
