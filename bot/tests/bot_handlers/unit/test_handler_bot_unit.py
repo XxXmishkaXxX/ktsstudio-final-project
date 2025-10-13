@@ -25,7 +25,7 @@ async def test_handle_callback_invokes_join_and_buzzer(mock_buzzer, mock_join):
         message_id=40,
         user_data={"id": 1},
         team=2,
-        team_num=1
+        team_num=1,
     )
     app.store.users.create_or_get_user.assert_awaited_once_with({"id": 1})
     mock_join.assert_awaited_once_with(app, 10, 20, 30, 40, {"id": 1}, 2, 1)
