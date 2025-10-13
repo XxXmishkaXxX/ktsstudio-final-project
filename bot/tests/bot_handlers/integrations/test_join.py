@@ -20,9 +20,10 @@ async def test_join_to_game(application, store):
 
     application.game_service.update_state = AsyncMock()
 
-    team_id = await application.game_service.join_to_game(
+    await application.game_service.join_to_game(
         game.id, team2.id, tg_id, chat_id
     )
+    team_id = await store.teams.get_team_by_user_id(game.id, tg_id)
     assert team_id == team2.id
     application.game_service.update_state.assert_awaited_once_with(
         game.id, chat_id, None

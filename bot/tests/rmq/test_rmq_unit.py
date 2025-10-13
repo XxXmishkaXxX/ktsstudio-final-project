@@ -89,7 +89,7 @@ async def test_rmq_callback_invokes_correct_handler(
             "message": {"chat": {"id": 1}, "message_id": 10},
             "id": "cb123",
             "from": {"id": 100},
-            "data": json.dumps({"type": "join", "game": 5}),
+            "data": json.dumps({"type": "join", "game": 5, "t_num": 1}),
         }
     }
 
@@ -107,6 +107,7 @@ async def test_rmq_callback_invokes_correct_handler(
                 "callback_id": "cb123",
                 "message_id": 10,
                 "user_data": {"id": 100},
+                "team_num": 1,
                 "team": None,
                 "round_id": None,
             },
