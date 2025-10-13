@@ -31,6 +31,7 @@ async def rmq_callback(message: aio_pika.IncomingMessage, app: "Application"):
                     data["message_id"],
                     data["user_data"],
                     team=data["team"],
+                    team_num=data["team_num"],
                     round_id=data["round_id"],
                 )
 

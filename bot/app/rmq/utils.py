@@ -26,6 +26,7 @@ def extract_callback_data(payload: dict) -> dict:
         "game_id": data["game"],
         "round_id": data.get("round"),
         "team": data.get("team"),
+        "team_num": data.get("t_num"),
         "user_data": user_data,
     }
 
