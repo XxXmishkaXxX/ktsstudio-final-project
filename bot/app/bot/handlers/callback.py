@@ -2,6 +2,7 @@ import typing
 
 from app.bot.handlers.callbacks.buzzer import press_buzzer_callback
 from app.bot.handlers.callbacks.join import join_game_callback
+from app.bot.handlers.callbacks.leave import leave_game_callback
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -21,9 +22,21 @@ async def handle_callback(
     match callback_type:
         case "join":
             team = kwargs.get("team")
+            team_num = kwargs.get("team_num")
             await join_game_callback(
-                app, game_id, chat_id, callback_id, message_id, user, team
+                app,
+                game_id,
+                chat_id,
+                callback_id,
+                message_id,
+                user,
+                team,
+                team_num,
             )
         case "buzzer":
             round_id = kwargs.get("round_id")
             await press_buzzer_callback(app, round_id, callback_id, user)
+        case "leave":
+            await leave_game_callback(
+                app, game_id, chat_id, callback_id, message_id, user
+            )
