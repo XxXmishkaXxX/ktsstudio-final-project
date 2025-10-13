@@ -69,7 +69,30 @@ class GameService:
 
         await self.app.store.teams.join_team(new_team.id, tg_id)
         await self.update_state(game_id, chat_id, message_id)
-        return new_team.id
+
+    async def leave_game(
+        self, game_id: int, chat_id: int, message_id: int, tg_id: int
+    ):
+        teams = await self.app.store.teams.get_game_teams(game_id)
+
+        if not teams:
+            raise Exception("У этой игры нет команд")
+
+        current_team = None
+        for team in teams:
+            for member in team.members:
+                if member.user_id == tg_id:
+                    current_team = team
+                    break
+            if current_team:
+                break
+
+        if not current_team:
+            raise Exception("Вы не находитесь ни в одной команде этой игры")
+
+        await self.app.store.teams.leave_team(current_team.id, tg_id)
+
+        await self.update_state(game_id, chat_id, message_id)
 
     async def update_state(
         self, game_id: int, chat_id: int, message_id: int | None = None
@@ -91,7 +114,7 @@ class GameService:
     async def _handle_created(self, game_id, chat_id, message_id):
         teams = await self.app.store.teams.get_game_teams(game_id)
 
-        ready = all(len(t.members) == 5 for t in teams[:2])
+        ready = all(len(t.members) == 5 for t in teams)
         if ready:
             await self.app.store.games.set_game_state(
                 game_id, GameState.starting
@@ -123,7 +146,7 @@ class GameService:
 
         async def on_finish():
             teams_now = await self.app.store.teams.get_game_teams(game_id)
-            ready_now = all(len(t.members) == 5 for t in teams_now[:2])
+            ready_now = all(len(t.members) == 5 for t in teams_now)
             if ready_now:
                 await self.app.store.games.set_game_state(
                     game_id, GameState.in_progress
