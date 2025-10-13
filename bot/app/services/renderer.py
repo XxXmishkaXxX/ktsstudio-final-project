@@ -4,7 +4,7 @@ import typing
 if typing.TYPE_CHECKING:
     from app.web.app import Application
 
-from app.bot.keyboards import buzzer_button, join_game
+from app.bot.keyboards import buzzer_button, join_game, leave_game
 from app.bot.texts import (
     get_finish_game_text,
     get_game_created_text,
@@ -37,14 +37,25 @@ class GameRenderer:
             team_2=members_team2,
         )
 
-        kb = json.dumps(join_game(game_id, team1.id, team2.id))
+        has_players = bool(team1.members or team2.members)
+
+        kb = join_game(game_id, team1.id, team2.id)
+
+        if has_players:
+            leave_kb = leave_game(game_id)
+            kb["inline_keyboard"].extend(leave_kb["inline_keyboard"])
+
         if message_id:
             await self.app.telegram.edit_message(
-                chat_id, message_id, text, reply_markup=kb, parse_mode="HTML"
+                chat_id,
+                message_id,
+                text,
+                reply_markup=json.dumps(kb),
+                parse_mode="HTML",
             )
         else:
             response = await self.app.telegram.send_message(
-                chat_id, text, reply_markup=kb, parse_mode="HTML"
+                chat_id, text, reply_markup=json.dumps(kb), parse_mode="HTML"
             )
             await self.app.cache.pool.set(
                 f"game:{game_id}:message_id", response["result"]["message_id"]
