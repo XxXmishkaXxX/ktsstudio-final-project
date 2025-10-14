@@ -67,6 +67,7 @@ class GameService:
             await self.app.store.teams.leave_team(current_team.id, tg_id)
 
         await self.app.store.teams.join_team(new_team.id, tg_id)
+        await self.app.store.users.set_state_user(tg_id, UserState.in_game)
         await self.update_state(game_id, chat_id, message_id)
 
     async def leave_game(
@@ -90,6 +91,7 @@ class GameService:
             raise Exception("Вы не находитесь ни в одной команде этой игры")
 
         await self.app.store.teams.leave_team(current_team.id, tg_id)
+        await self.app.store.users.set_state_user(tg_id, UserState.idle)
 
         await self.update_state(game_id, chat_id, message_id)
 
@@ -215,7 +217,7 @@ class GameService:
         elif team2.score > team1.score:
             winners, score = (
                 [member.user.username for member in team2.members],
-                team1.score,
+                team2.score,
             )
         else:
             winners, score = None, None
@@ -225,6 +227,7 @@ class GameService:
                 await self.app.store.users.set_state_user(
                     member.user_id, UserState.idle
                 )
+                self.app.logger.info(member.user_id)
 
         await self.app.heartbeat.stop(game_id)
         await self.app.renderer.render_finished(
