@@ -20,21 +20,15 @@ async def test_join_to_game(application, store):
 
     application.game_service.update_state = AsyncMock()
 
-    await application.game_service.join_to_game(
-        game.id, team2.id, tg_id
-    )
+    await application.game_service.join_to_game(game.id, team2.id, tg_id)
     team_id = await store.teams.get_team_by_user_id(game.id, tg_id)
     assert team_id == team2.id
 
     with pytest.raises(Exception, match="Вы уже находитесь в этой команде"):
-        await application.game_service.join_to_game(
-            game.id, team2.id, tg_id
-        )
+        await application.game_service.join_to_game(game.id, team2.id, tg_id)
 
     with pytest.raises(Exception, match="Команда не найдена"):
-        await application.game_service.join_to_game(
-            game.id, 999, tg_id
-        )
+        await application.game_service.join_to_game(game.id, 999, tg_id)
 
     for i in range(2, 7):
         await store.teams.join_team(team1.id, i)
