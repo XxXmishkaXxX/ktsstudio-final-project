@@ -60,7 +60,7 @@ class GameService:
         if not new_team:
             raise Exception("Команда не найдена")
 
-        if len(new_team.members) >= 5:
+        if len(new_team.members) >= self.app.config.game.max_players:
             raise Exception("В команде нет свободных мест")
 
         if current_team:
@@ -113,7 +113,9 @@ class GameService:
     async def _handle_created(self, game_id, chat_id, message_id):
         teams = await self.app.store.teams.get_game_teams(game_id)
 
-        ready = all(len(t.members) == 5 for t in teams)
+        ready = all(
+            len(t.members) >= self.app.config.game.min_players for t in teams
+        )
         if ready:
             await self.app.store.games.set_game_state(
                 game_id, GameState.starting
@@ -143,7 +145,10 @@ class GameService:
 
         async def on_finish():
             teams_now = await self.app.store.teams.get_game_teams(game_id)
-            ready_now = all(len(t.members) == 5 for t in teams_now)
+            ready_now = all(
+                len(t.members) >= self.app.config.game.min_players
+                for t in teams_now
+            )
             if ready_now:
                 await self.app.store.games.set_game_state(
                     game_id, GameState.in_progress
