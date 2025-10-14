@@ -44,12 +44,19 @@ class DBConfig:
 
 
 @dataclass
+class Game:
+    min_players: int = 5
+    max_players: int = 5
+
+
+@dataclass
 class Config:
     bot: BotConfig
     server: ServerConfig
     rmq: RMQConfig
     redis: RedisConfig
     db: DBConfig
+    game: Game
 
 
 def setup_config(app: "Application", config_path: str):
@@ -58,6 +65,7 @@ def setup_config(app: "Application", config_path: str):
 
     bot_conf = raw.get("bot", {})
     server_conf = raw.get("server", {})
+    game_conf = raw.get("game", {})
     rmq_conf = raw.get("rabbitmq", {})
     redis_conf = raw.get("redis", {})
     db_conf = raw.get("database", {})
@@ -71,6 +79,11 @@ def setup_config(app: "Application", config_path: str):
     server = ServerConfig(
         host=server_conf.get("host", "0.0.0.0"),
         port=server_conf.get("port", 8080),
+    )
+
+    game = Game(
+        min_players=game_conf.get("min_players"),
+        max_players=game_conf.get("max_players"),
     )
 
     rmq = RMQConfig(
@@ -92,9 +105,5 @@ def setup_config(app: "Application", config_path: str):
     )
 
     app.config = Config(
-        bot=bot,
-        server=server,
-        rmq=rmq,
-        redis=redis,
-        db=db,
+        bot=bot, server=server, rmq=rmq, redis=redis, db=db, game=game
     )

@@ -22,3 +22,7 @@ database:
   user: postgres
   password: postgres_pass
   database: db_game_test
+
+game:
+  min_players: 1
+  max_players: 5

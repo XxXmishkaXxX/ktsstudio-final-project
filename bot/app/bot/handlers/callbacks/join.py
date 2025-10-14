@@ -17,13 +17,12 @@ async def join_game_callback(
     t_num: int,
 ):
     try:
-        await app.game_service.join_to_game(
-            game_id, team, user.id, chat_id, message_id
-        )
-        await app.store.users.set_state_user(user.id, State.in_game)
+        await app.game_service.join_to_game(game_id, team, user.id)
         await app.telegram.answer_callback_query(
             callback_id, f"Вы присоединились в команду {t_num}"
         )
+        await app.store.users.set_state_user(user.id, State.in_game)
+        await app.game_service.update_state(game_id, chat_id, message_id)
     except Exception as e:
         await app.telegram.answer_callback_query(callback_id, str(e))
     else:
