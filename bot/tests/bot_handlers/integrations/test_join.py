@@ -25,9 +25,6 @@ async def test_join_to_game(application, store):
     )
     team_id = await store.teams.get_team_by_user_id(game.id, tg_id)
     assert team_id == team2.id
-    application.game_service.update_state.assert_awaited_once_with(
-        game.id, chat_id, None
-    )
 
     with pytest.raises(Exception, match="Вы уже находитесь в этой команде"):
         await application.game_service.join_to_game(

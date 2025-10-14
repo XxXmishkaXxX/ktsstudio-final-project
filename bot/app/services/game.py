@@ -1,3 +1,4 @@
+import asyncio
 import typing
 
 if typing.TYPE_CHECKING:
@@ -34,8 +35,6 @@ class GameService:
         game_id: int,
         team_id: int,
         tg_id: int,
-        chat_id: int,
-        message_id: int | None = None,
     ):
         teams = await self.app.store.teams.get_game_teams(game_id)
 
@@ -67,12 +66,8 @@ class GameService:
             await self.app.store.teams.leave_team(current_team.id, tg_id)
 
         await self.app.store.teams.join_team(new_team.id, tg_id)
-        await self.app.store.users.set_state_user(tg_id, UserState.in_game)
-        await self.update_state(game_id, chat_id, message_id)
 
-    async def leave_game(
-        self, game_id: int, chat_id: int, message_id: int, tg_id: int
-    ):
+    async def leave_game(self, game_id: int, tg_id: int):
         teams = await self.app.store.teams.get_game_teams(game_id)
 
         if not teams:
@@ -91,9 +86,6 @@ class GameService:
             raise Exception("Вы не находитесь ни в одной команде этой игры")
 
         await self.app.store.teams.leave_team(current_team.id, tg_id)
-        await self.app.store.users.set_state_user(tg_id, UserState.idle)
-
-        await self.update_state(game_id, chat_id, message_id)
 
     async def update_state(
         self, game_id: int, chat_id: int, message_id: int | None = None
@@ -171,13 +163,15 @@ class GameService:
                 game_id, chat_id, message_id, teams
             )
 
-        await self.app.timer_service.start_timer(
-            redis_key,
-            lock_key,
-            sec=5,
-            on_tick=on_tick,
-            on_finish=on_finish,
-            on_interrupt=on_interrupt,
+        asyncio.create_task(  # noqa: RUF006
+            self.app.timer_service.start_timer(
+                redis_key,
+                lock_key,
+                sec=5,
+                on_tick=on_tick,
+                on_finish=on_finish,
+                on_interrupt=on_interrupt,
+            )
         )
 
     async def _handle_in_progress(self, game_id, chat_id, message_id):
