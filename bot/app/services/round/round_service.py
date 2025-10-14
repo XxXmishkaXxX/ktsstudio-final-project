@@ -78,7 +78,9 @@ class RoundService:
             raise Exception("Недостаточно команд для faceoff")
 
         team1, team2 = teams[0], teams[1]
-        max_players = 5
+
+        team1_count = len(team1.members)
+        team2_count = len(team2.members)
 
         key_idx = f"game:{game_id}:buzzer_idx"
         data = await self.app.cache.pool.get(key_idx)
@@ -88,8 +90,8 @@ class RoundService:
         else:
             idx1, idx2 = 0, 0
 
-        player1 = team1.members[idx1 % max_players].user_id
-        player2 = team2.members[idx2 % max_players].user_id
+        player1 = team1.members[idx1 % team1_count].user_id
+        player2 = team2.members[idx2 % team2_count].user_id
 
         key_faceoff = f"game:{game_id}:faceoff_players"
         await self.app.cache.pool.set(
@@ -100,8 +102,8 @@ class RoundService:
             key_idx,
             json.dumps(
                 {
-                    "idx1": (idx1 + 1) % max_players,
-                    "idx2": (idx2 + 1) % max_players,
+                    "idx1": (idx1 + 1) % team1_count,
+                    "idx2": (idx2 + 1) % team2_count,
                 }
             ),
         )
@@ -264,6 +266,11 @@ class RoundService:
                 )
             else:
                 team_id = None
+                round_.current_buzzer_id = None
+                round_.temp_answer = None
+                await self.app.store.rounds.set_round_state(
+                    round_.id, RoundState.faceoff
+                )
 
             if team_id:
                 round_.current_team_id = team_id
