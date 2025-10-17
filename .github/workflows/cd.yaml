@@ -23,9 +23,11 @@ jobs:
           filters: |
             webhook:
               - 'webhook/**'
+              - 'rmq_core/**'
             bot:
               - 'bot/**'
               - 'db_core/**'
+              - 'rmq_core/**'
             api:
               - 'api/**'
               - 'db_core/**'
