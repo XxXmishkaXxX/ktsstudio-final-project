@@ -36,6 +36,12 @@ class RabbitMQ:
 
         await self.queue.consume(wrapped_callback, no_ack=False)
 
+    async def publish(self, message: str):
+        await self._channel.default_exchange.publish(
+            aio_pika.Message(body=message.encode()),
+            routing_key=self.queue.name,
+        )
+
     async def close(self):
         if self._connection:
             await self._connection.close()
