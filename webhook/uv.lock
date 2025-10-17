@@ -520,6 +520,17 @@ wheels = [
 ]
 
 [[package]]
+name = "rmq-core"
+version = "0.0.1"
+source = { editable = "../rmq_core" }
+dependencies = [
+    { name = "aio-pika" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "aio-pika", specifier = "==9.5.7" }]
+
+[[package]]
 name = "ruff"
 version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -578,6 +589,7 @@ dependencies = [
     { name = "pytest-aiohttp" },
     { name = "pytest-asyncio" },
     { name = "pyyaml" },
+    { name = "rmq-core" },
     { name = "ruff" },
     { name = "typing-extensions" },
     { name = "yarl" },
@@ -604,6 +616,7 @@ requires-dist = [
     { name = "pytest-aiohttp", specifier = "==1.1.0" },
     { name = "pytest-asyncio", specifier = "==1.2.0" },
     { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "rmq-core", editable = "../rmq_core" },
     { name = "ruff", specifier = "==0.14.0" },
     { name = "typing-extensions", specifier = "==4.15.0" },
     { name = "yarl", specifier = "==1.20.1" },

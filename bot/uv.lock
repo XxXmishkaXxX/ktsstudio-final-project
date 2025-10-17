@@ -192,6 +192,7 @@ dependencies = [
     { name = "pytest-aiohttp" },
     { name = "pyyaml" },
     { name = "redis" },
+    { name = "rmq-core" },
     { name = "ruff" },
     { name = "typing-extensions" },
     { name = "yarl" },
@@ -218,6 +219,7 @@ requires-dist = [
     { name = "pytest-aiohttp", specifier = ">=1.1.0" },
     { name = "pyyaml", specifier = "==6.0.3" },
     { name = "redis", specifier = "==6.4.0" },
+    { name = "rmq-core", editable = "../rmq_core" },
     { name = "ruff", specifier = "==0.7.3" },
     { name = "typing-extensions", specifier = "==4.15.0" },
     { name = "yarl", specifier = "==1.20.1" },
@@ -743,6 +745,17 @@ sdist = { url = "https://files.pythonhosted.org/packages/0d/d6/e8b92798a5bd67d65
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e8/02/89e2ed7e85db6c93dfa9e8f691c5087df4e3551ab39081a4d7c6d1f90e05/redis-6.4.0-py3-none-any.whl", hash = "sha256:f0544fa9604264e9464cdf4814e7d4830f74b165d52f2a330a760a88dd248b7f", size = 279847, upload-time = "2025-08-07T08:10:09.84Z" },
 ]
+
+[[package]]
+name = "rmq-core"
+version = "0.0.1"
+source = { editable = "../rmq_core" }
+dependencies = [
+    { name = "aio-pika" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "aio-pika", specifier = "==9.5.7" }]
 
 [[package]]
 name = "ruff"
