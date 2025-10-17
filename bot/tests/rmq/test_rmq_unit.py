@@ -147,14 +147,14 @@ async def test_rmq_callback_invokes_correct_handler(
 
 @pytest.mark.asyncio
 async def test_rabbitmq_consume_without_queue(rmq):
-    rmq = RabbitMQ(MagicMock, "localhost", 1111, "user", "pass", "test-queue")
+    rmq = RabbitMQ(MagicMock)
     with pytest.raises(RuntimeError):
         await rmq.consume(AsyncMock())
 
 
 @pytest.mark.asyncio
 async def test_rabbitmq_close(application):
-    rmq = RabbitMQ(application, "localhost", 1111, "user", "pass", "test-queue")
+    rmq = RabbitMQ(application)
     rmq._connection = AsyncMock()
 
     await rmq.close()
