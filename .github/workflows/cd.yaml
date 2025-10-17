@@ -45,6 +45,7 @@ jobs:
             echo 'changed_services={"service":[]}' >> $GITHUB_OUTPUT
           else
             echo "changed_services={\"service\":[${services[*]}]}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Debug changed services
         run: echo "${{ steps.prepare.outputs.changed_services }}"
