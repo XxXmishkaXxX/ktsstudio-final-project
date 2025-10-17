@@ -4,7 +4,7 @@ import os
 import pytest
 from db_core.database.db import Database
 
-from app.rmq.rabbitmq import RabbitMQ
+from app.rmq import RabbitMQ
 from app.store.cache.cache import Cache
 from app.web.app import setup_app
 

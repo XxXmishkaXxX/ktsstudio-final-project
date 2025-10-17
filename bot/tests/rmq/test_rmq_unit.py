@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.rmq.rabbitmq import RabbitMQ
+from app.rmq import RabbitMQ
 from app.rmq.rmq_callback import rmq_callback
 from app.rmq.utils import (
     extract_callback_data,
