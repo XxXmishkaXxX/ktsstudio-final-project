@@ -40,13 +40,14 @@ jobs:
           if [[ "${{ steps.filter.outputs.api }}" == "true" ]]; then changed+=("api"); fi
 
           if [ ${#changed[@]} -eq 0 ]; then
-            echo "services=[]" >> $GITHUB_OUTPUT
             echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "services=[]" >> $GITHUB_OUTPUT
           else
-            # Собираем валидный JSON: ["bot","api"]
             json=$(printf '%s\n' "${changed[@]}" | jq -R . | jq -s .)
-            echo "services=${json}" >> $GITHUB_OUTPUT
             echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "services<<EOF" >> $GITHUB_OUTPUT
+            echo "${json}" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
 
   build-and-push:
