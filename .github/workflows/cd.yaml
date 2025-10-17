@@ -8,13 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ------------------------
-  # Шаг 1: Детектируем изменения
-  # ------------------------
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      changed_services: ${{ steps.prepare.outputs.changed_services }}
+      services: ${{ steps.set-output.outputs.services }}
+      has_changes: ${{ steps.set-output.outputs.has_changes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,37 +31,31 @@ jobs:
               - 'api/**'
               - 'db_core/**'
 
-      - name: Prepare changed services list
-        id: prepare
+      - name: Set outputs
+        id: set-output
         run: |
-          services=()
-          if [ "${{ steps.filter.outputs.webhook }}" == "true" ]; then services+=('"webhook"'); fi
-          if [ "${{ steps.filter.outputs.bot }}" == "true" ]; then services+=('"bot"'); fi
-          if [ "${{ steps.filter.outputs.api }}" == "true" ]; then services+=('"api"'); fi
+          changed=()
+          if [[ "${{ steps.filter.outputs.webhook }}" == "true" ]]; then changed+=('"webhook"'); fi
+          if [[ "${{ steps.filter.outputs.bot }}" == "true" ]]; then changed+=('"bot"'); fi
+          if [[ "${{ steps.filter.outputs.api }}" == "true" ]]; then changed+=('"api"'); fi
 
-          if [ ${#services[@]} -eq 0 ]; then
-            echo 'changed_services={"service":[]}' >> $GITHUB_OUTPUT
+          if [ ${#changed[@]} -eq 0 ]; then
+            echo "services=[]" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "changed_services={\"service\":[${services[*]}]}" >> $GITHUB_OUTPUT
+            echo "services=[${changed[*]}]" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Debug changed services
-        run: echo "${{ steps.prepare.outputs.changed_services }}"
-
-  # ------------------------
-  # Шаг 2: Сборка и пуш Docker образов
-  # ------------------------
   build-and-push:
-    name: Build & Push Docker Images
     needs: detect-changes
-    if: needs.detect-changes.outputs.changed_services != '{"service":[]}'
+    if: needs.detect-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJSON(needs.detect-changes.outputs.changed_services) }}
-
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -86,14 +78,11 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ matrix.service }}-cache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ matrix.service }}-cache,mode=max
 
-  # ------------------------
-  # Шаг 3: Деплой на сервер
-  # ------------------------
   deploy:
     name: Deploy to server
     runs-on: ubuntu-latest
-    needs: build-and-push
-    if: needs.build-and-push.result == 'success'
+    needs: [detect-changes, build-and-push]
+    if: needs.detect-changes.outputs.has_changes == 'true' && needs.build-and-push.result == 'success'
     steps:
       - name: Deploy on remote server
         uses: appleboy/ssh-action@v0.1.8
