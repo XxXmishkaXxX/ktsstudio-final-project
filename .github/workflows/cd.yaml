@@ -8,24 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ------------------------
+  # Шаг 1: Детектируем изменения
+  # ------------------------
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      changed_services: ${{ steps.filter.outputs.changed_services }}
+      changed_services: ${{ steps.prepare.outputs.changed_services }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - id: filter
+      - name: Detect changed paths
+        id: filter
         uses: dorny/paths-filter@v3
         with:
           filters: |
             webhook:
               - 'webhook/**'
-              - 'rmq_core/**'
             bot:
               - 'bot/**'
               - 'db_core/**'
-              - 'rmq_core/**'
             api:
               - 'api/**'
               - 'db_core/**'
@@ -37,8 +40,18 @@ jobs:
           if [ "${{ steps.filter.outputs.webhook }}" == "true" ]; then services+=('"webhook"'); fi
           if [ "${{ steps.filter.outputs.bot }}" == "true" ]; then services+=('"bot"'); fi
           if [ "${{ steps.filter.outputs.api }}" == "true" ]; then services+=('"api"'); fi
-          echo "changed_services={\"service\":[${services[*]}]}" >> $GITHUB_OUTPUT
 
+          if [ ${#services[@]} -eq 0 ]; then
+            echo 'changed_services={"service":[]}' >> $GITHUB_OUTPUT
+          else
+            echo "changed_services={\"service\":[${services[*]}]}" >> $GITHUB_OUTPUT
+
+      - name: Debug changed services
+        run: echo "${{ steps.prepare.outputs.changed_services }}"
+
+  # ------------------------
+  # Шаг 2: Сборка и пуш Docker образов
+  # ------------------------
   build-and-push:
     name: Build & Push Docker Images
     needs: detect-changes
@@ -48,7 +61,8 @@ jobs:
       matrix: ${{ fromJSON(needs.detect-changes.outputs.changed_services) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -71,6 +85,9 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ matrix.service }}-cache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ matrix.service }}-cache,mode=max
 
+  # ------------------------
+  # Шаг 3: Деплой на сервер
+  # ------------------------
   deploy:
     name: Deploy to server
     runs-on: ubuntu-latest
