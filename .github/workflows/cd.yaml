@@ -35,15 +35,17 @@ jobs:
         id: set-output
         run: |
           changed=()
-          if [[ "${{ steps.filter.outputs.webhook }}" == "true" ]]; then changed+=('"webhook"'); fi
-          if [[ "${{ steps.filter.outputs.bot }}" == "true" ]]; then changed+=('"bot"'); fi
-          if [[ "${{ steps.filter.outputs.api }}" == "true" ]]; then changed+=('"api"'); fi
+          if [[ "${{ steps.filter.outputs.webhook }}" == "true" ]]; then changed+=("webhook"); fi
+          if [[ "${{ steps.filter.outputs.bot }}" == "true" ]]; then changed+=("bot"); fi
+          if [[ "${{ steps.filter.outputs.api }}" == "true" ]]; then changed+=("api"); fi
 
           if [ ${#changed[@]} -eq 0 ]; then
             echo "services=[]" >> $GITHUB_OUTPUT
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "services=[${changed[*]}]" >> $GITHUB_OUTPUT
+            # Собираем валидный JSON: ["bot","api"]
+            json=$(printf '%s\n' "${changed[@]}" | jq -R . | jq -s .)
+            echo "services=${json}" >> $GITHUB_OUTPUT
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
