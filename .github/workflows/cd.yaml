@@ -47,7 +47,8 @@ jobs:
         if: matrix.service == 'webhook' && steps.changes.outputs.webhook == 'true'
         uses: docker/build-push-action@v6
         with:
-          context: ./webhook
+          context: .
+          file: ./webhook/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:webhook-latest

@@ -4,7 +4,7 @@ import os
 import pytest
 from db_core.database.db import Database
 
-from app.rmq.rabbitmq import RabbitMQ
+from app.rmq import RabbitMQ
 from app.store.cache.cache import Cache
 from app.web.app import setup_app
 
@@ -34,14 +34,7 @@ async def application():
     async with app.database.engine.begin() as conn:
         await conn.run_sync(app.database._db.metadata.create_all)
 
-    app.rmq = RabbitMQ(
-        app,
-        host=app.config.rmq.host,
-        port=app.config.rmq.port,
-        user=app.config.rmq.user,
-        password=app.config.rmq.password,
-        queue=app.config.rmq.queue,
-    )
+    app.rmq = RabbitMQ(app)
     await app.rmq.connect()
 
     yield app

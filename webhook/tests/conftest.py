@@ -2,6 +2,7 @@ import os
 from unittest.mock import AsyncMock
 
 import pytest
+
 from app.web.app import setup_app
 
 

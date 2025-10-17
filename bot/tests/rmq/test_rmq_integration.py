@@ -9,9 +9,7 @@ from aio_pika.exceptions import ChannelInvalidStateError
 async def test_rabbitmq_connect(rmq, config):
     await rmq.connect()
     assert rmq.queue is not None
-    assert (
-        rmq.queue.name == rmq.queue_name or rmq.queue.name == config.rmq.queue
-    )
+    assert rmq.queue.name == config.rmq.queue
 
 
 async def test_rabbitmq_consume(rmq):
@@ -28,7 +26,7 @@ async def test_rabbitmq_consume(rmq):
 
     await rmq._channel.default_exchange.publish(
         aio_pika.Message(body=b"ping"),
-        routing_key=rmq.queue_name,
+        routing_key=rmq.queue.name,
     )
 
     await asyncio.wait_for(called.wait(), timeout=3)
@@ -52,5 +50,5 @@ async def test_rabbitmq_close_really_closes_connection(rmq):
     with pytest.raises(ChannelInvalidStateError):
         await rmq._channel.default_exchange.publish(
             aio_pika.Message(body=b"after-close"),
-            routing_key=rmq.queue_name,
+            routing_key=rmq.queue.name,
         )
