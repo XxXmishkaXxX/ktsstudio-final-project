@@ -16,7 +16,8 @@ RUN curl -fsSL https://astral.sh/uv/install.sh -o /uv-installer.sh \
 
 ENV PATH="/root/.local/bin/:$PATH"
 
-COPY . .
+COPY webhook/ .
+COPY rmq_core /rmq_core
 
 RUN uv venv
 RUN uv sync
