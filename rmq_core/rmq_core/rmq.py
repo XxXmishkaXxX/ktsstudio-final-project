@@ -5,10 +5,7 @@ import aio_pika
 
 
 class RabbitMQ:
-    def __init__(
-        self,
-        app,
-    ):
+    def __init__(self, app):
         self.app = app
 
         self._connection = None
