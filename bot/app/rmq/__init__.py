@@ -1,8 +1,8 @@
 import typing
 
 from rmq_core.rmq import RabbitMQ
-from app.rmq.rmq_callback import rmq_callback
 
+from app.rmq.rmq_callback import rmq_callback
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application

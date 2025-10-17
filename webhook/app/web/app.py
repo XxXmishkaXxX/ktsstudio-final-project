@@ -2,6 +2,7 @@ from aiohttp.web import (
     Application as AiohttpApplication,
     Request as AiohttpRequest,
 )
+
 from app.bot.webhook import TelegramBot, setup_webhook
 from app.rmq import RabbitMQ, setup_rabbitmq
 from app.web.config import Config, setup_config
