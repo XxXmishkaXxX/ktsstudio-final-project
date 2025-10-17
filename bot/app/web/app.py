@@ -6,7 +6,7 @@ from db_core.database.db import Database
 
 from app.bot.client import TelegramBot, setup_telegram_client
 from app.recovery.setup import HeartbeatService, RecoveryService, setup_recovery
-from app.rmq.rabbitmq import RabbitMQ, setup_rabbitmq
+from app.rmq import RabbitMQ, setup_rabbitmq
 from app.services.setup import (
     GameRenderer,
     GameService,
