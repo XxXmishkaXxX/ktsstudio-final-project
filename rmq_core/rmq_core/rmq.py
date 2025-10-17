@@ -36,7 +36,7 @@ class RabbitMQ:
 
         await self.queue.consume(wrapped_callback, no_ack=False)
 
-    async def publish(self, message: str, retry: int = 3):
+    async def publish(self, message: str, retry: int = 3) -> None:
         for _ in range(retry):
             try:
                 await self._channel.default_exchange.publish(
@@ -45,6 +45,8 @@ class RabbitMQ:
                 )
             except aio_pika.exceptions.AMQPConnectionError:
                 await self.connect()
+            else:
+                return
         raise RuntimeError("Failed to publish message after retries")
 
     async def close(self):
