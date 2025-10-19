@@ -34,7 +34,6 @@
 ├─ docker-compose.yaml # Конфигурация Docker
 ├─ doker-compose-prod.yaml # Конфигурация Docker для прода
 ├─ pyproject.toml # Зависимости и настройки Python
-├─ requirements.txt # Зависимости Python
 └─ README.md # Этот файл
 ```
 
@@ -143,6 +142,7 @@ curl http://localhost:8082/questions/?page=1&limit=10
 ## Благодарности
 
 - [KTS Studio](https://ktsstudio.ru/) — курс и поддержка
+
 
 
 
