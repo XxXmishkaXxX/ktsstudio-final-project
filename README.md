@@ -27,10 +27,13 @@
 ├─ api/ # Основной backend
 ├─ bot/ # Логика бота (игра "100 к 1")
 ├─ webhook/ # Обработка входящих вебхуков
+├─ db_core/ # ядро бд, модели, аксессоры
+├─ rmq_core/ ядро RabbitMQ
+├─ nginx/ # конфигурация nginx
 ├─ .github/workflows/ # CI/CD
 ├─ docker-compose.yaml # Конфигурация Docker
+├─ doker-compose-prod.yaml # Конфигурация Docker для прода
 ├─ pyproject.toml # Зависимости и настройки Python
-├─ requirements.txt # Зависимости Python
 └─ README.md # Этот файл
 ```
 
@@ -51,6 +54,10 @@ webhook/config.yml
 bot/config.yml
 api/config.yml
 ```
+Рекомендую использовать tuna для локального тестирования.
+```bash
+tuna http 8080
+```
 
 ### 3. Запуск через Docker (рекомендуется)
 ```bash
@@ -63,7 +70,8 @@ docker-compose up --build
 
 - **Python 3.11+** – основной язык проекта  
 - **aiohttp** – асинхронный веб-фреймворк для API и вебхуков  
-- **Redis** – кэширование и хранение временных данных (например, состояние игры)  
+- **Redis** – кэширование и хранение временных данных (например, состояние игры)
+- **rabbitmq** - очередь для передачи данных между сервисами 
 - **PostgreSQL** – основная база данных для хранения информации о пользователях и результатах игр  
 - **Docker & Docker Compose** – контейнеризация всех сервисов для удобного запуска  
 - **pytest** – для тестирования кода  
@@ -134,5 +142,7 @@ curl http://localhost:8082/questions/?page=1&limit=10
 ## Благодарности
 
 - [KTS Studio](https://ktsstudio.ru/) — курс и поддержка
+
+
 
 
