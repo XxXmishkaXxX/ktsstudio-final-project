@@ -28,7 +28,8 @@
 ├─ bot/ # Логика бота (игра "100 к 1")
 ├─ webhook/ # Обработка входящих вебхуков
 ├─ db_core/ # ядро бд, модели, аксессоры
-├─ rmq_core/ ядро RabbitMQ
+├─ rmq_core/ # ядро RabbitMQ
+├─ tg_client/ # работа с тг
 ├─ nginx/ # конфигурация nginx
 ├─ .github/workflows/ # CI/CD
 ├─ docker-compose.yaml # Конфигурация Docker
@@ -142,6 +143,7 @@ curl http://localhost:8082/questions/?page=1&limit=10
 ## Благодарности
 
 - [KTS Studio](https://ktsstudio.ru/) — курс и поддержка
+
 
 
 
