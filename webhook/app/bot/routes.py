@@ -16,7 +16,6 @@ async def webhook(request: web.Request):
         return web.json_response({"error": "invalid payload"}, status=400)
 
     app = request.app
-    app.logger.info(data)
 
     try:
         await app.rmq.publish(message=json.dumps(data))
