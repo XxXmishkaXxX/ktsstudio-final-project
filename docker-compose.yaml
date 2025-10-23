@@ -64,6 +64,7 @@ services:
     volumes:
       - ./webhook:/webhook
       - ./rmq_core:/rmq_core
+      - ./tg_client:/tg_client
     networks:
       - app_network
 
@@ -87,6 +88,7 @@ services:
       - ./bot:/bot
       - ./db_core:/db_core
       - ./rmq_core:/rmq_core
+      - ./tg_client:/tg_client
     networks:
       - app_network
 
