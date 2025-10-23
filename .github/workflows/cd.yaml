@@ -24,10 +24,12 @@ jobs:
             webhook:
               - 'webhook/**'
               - 'rmq_core/**'
+              - 'tg_client/**'
             bot:
               - 'bot/**'
               - 'db_core/**'
               - 'rmq_core/**'
+              - 'tg_client/**'
             api:
               - 'api/**'
               - 'db_core/**'
