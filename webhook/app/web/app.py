@@ -3,7 +3,8 @@ from aiohttp.web import (
     Request as AiohttpRequest,
 )
 
-from app.bot.webhook import TelegramBot, setup_webhook
+from tg_client.client import TelegramBot
+from tg_client.setup import setup_webhook
 from app.rmq import RabbitMQ, setup_rabbitmq
 from app.web.config import Config, setup_config
 from app.web.logger import setup_logging
