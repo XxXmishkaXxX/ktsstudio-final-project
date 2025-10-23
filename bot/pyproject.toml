@@ -25,6 +25,7 @@ dependencies = [
     "yarl==1.20.1",
     "db-core",
     "rmq-core",
+    "tg-client",
     "pytest>=8.4.2",
     "pytest-aiohttp>=1.1.0",
 ]
@@ -32,6 +33,7 @@ dependencies = [
 [tool.uv.sources]
 db-core = { path = "../db_core", editable = true }
 rmq-core = { path = "../rmq_core", editable = true }
+tg-client = { path = "../tg_client", editable = true }
 
 [tool.uv]
 
