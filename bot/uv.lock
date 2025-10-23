@@ -194,6 +194,7 @@ dependencies = [
     { name = "redis" },
     { name = "rmq-core" },
     { name = "ruff" },
+    { name = "tg-client" },
     { name = "typing-extensions" },
     { name = "yarl" },
 ]
@@ -221,6 +222,7 @@ requires-dist = [
     { name = "redis", specifier = "==6.4.0" },
     { name = "rmq-core", editable = "../rmq_core" },
     { name = "ruff", specifier = "==0.7.3" },
+    { name = "tg-client", editable = "../tg_client" },
     { name = "typing-extensions", specifier = "==4.15.0" },
     { name = "yarl", specifier = "==1.20.1" },
 ]
@@ -818,6 +820,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ac/a5/ca2f07a2a201f9497de1928f787926613db6307992fe5cda97624eb07c2f/sqlalchemy-2.0.43-cp313-cp313-win_amd64.whl", hash = "sha256:971ba928fcde01869361f504fcff3b7143b47d30de188b11c6357c0505824197", size = 2123200, upload-time = "2025-08-11T15:55:07.932Z" },
     { url = "https://files.pythonhosted.org/packages/b8/d9/13bdde6521f322861fab67473cec4b1cc8999f3871953531cf61945fad92/sqlalchemy-2.0.43-py3-none-any.whl", hash = "sha256:1681c21dd2ccee222c2fe0bef671d1aef7c504087c9c4e800371cfcc8ac966fc", size = 1924759, upload-time = "2025-08-11T15:39:53.024Z" },
 ]
+
+[[package]]
+name = "tg-client"
+version = "0.0.1"
+source = { editable = "../tg_client" }
+dependencies = [
+    { name = "aiohttp" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "aiohttp", specifier = "==3.12.15" }]
 
 [[package]]
 name = "typing-extensions"

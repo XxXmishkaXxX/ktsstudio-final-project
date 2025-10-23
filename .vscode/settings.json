@@ -1,6 +1,7 @@
 {
     "python.analysis.extraPaths": [
         "./db_core",
-        "./rmq_core"
+        "./rmq_core",
+        "./tg_client"
     ]
 }

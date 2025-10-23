@@ -1,16 +1,12 @@
 import asyncio
 import json
-import typing
 
 import aiohttp
 from aiohttp import ClientError, ServerDisconnectedError
 
-if typing.TYPE_CHECKING:
-    from app.web.app import Application
-
 
 class TelegramBot:
-    def __init__(self, app: "Application"):
+    def __init__(self, app):
         self.app = app
         self.session: aiohttp.ClientSession | None = None
 
@@ -86,7 +82,6 @@ class TelegramBot:
 
                 raise
 
-        # Если после всех попыток не удалось — возвращаем пустой результат
         return {}
 
     async def send_message(self, chat_id: int, text: str, **kwargs) -> dict:
@@ -138,9 +133,10 @@ class TelegramBot:
             payload["show_alert"] = True
         return await self.api_call("answerCallbackQuery", payload)
 
+    async def set_webhook(self, url: str, **kwargs) -> dict:
+        return await self.api_call("setWebhook", {"url": url, **kwargs})
 
-def setup_telegram_client(app: "Application"):
-    app.telegram = TelegramBot(app)
-
-    app.on_startup.append(app.telegram.start)
-    app.on_cleanup.append(app.telegram.close)
+    async def delete_webhook(self, drop_pending_updates: bool = True) -> dict:
+        return await self.api_call(
+            "deleteWebhook", {"drop_pending_updates": drop_pending_updates}
+        )

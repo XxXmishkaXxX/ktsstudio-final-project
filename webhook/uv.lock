@@ -557,6 +557,17 @@ wheels = [
 ]
 
 [[package]]
+name = "tg-client"
+version = "0.0.1"
+source = { editable = "../tg_client" }
+dependencies = [
+    { name = "aiohttp" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "aiohttp", specifier = "==3.12.15" }]
+
+[[package]]
 name = "typing-extensions"
 version = "4.15.0"
 source = { registry = "https://pypi.org/simple" }
@@ -591,6 +602,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "rmq-core" },
     { name = "ruff" },
+    { name = "tg-client" },
     { name = "typing-extensions" },
     { name = "yarl" },
 ]
@@ -618,6 +630,7 @@ requires-dist = [
     { name = "pyyaml", specifier = "==6.0.3" },
     { name = "rmq-core", editable = "../rmq_core" },
     { name = "ruff", specifier = "==0.14.0" },
+    { name = "tg-client", editable = "../tg_client" },
     { name = "typing-extensions", specifier = "==4.15.0" },
     { name = "yarl", specifier = "==1.20.1" },
 ]

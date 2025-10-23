@@ -27,10 +27,12 @@ dependencies = [
     "typing_extensions==4.15.0",
     "yarl==1.20.1",
     "rmq-core",
+    "tg-client", 
 ]
 
 [tool.uv.sources]
 rmq-core = { path = "../rmq_core", editable = true }
+tg-client = { path = "../tg_client", editable = true }
 
 [tool.ruff]
 extend = "../pyproject.toml"

@@ -18,6 +18,7 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 COPY webhook/ .
 COPY rmq_core /rmq_core
+COPY tg_client /tg_client
 
 RUN uv venv
 RUN uv sync
